@@ -164,6 +164,19 @@ public class BlockManager : MonoBehaviour
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            fallingBlock.transform.Rotate(new Vector3(0, 0, 90));
+            for (int i = 0; i < 5; i++)
+            {
+                if (!bounds.Contains(fallingBlock.subBlocks[i].transform.position))
+                {
+                    fallingBlock.transform.Rotate(new Vector3(0, 0, -90));
+                    i = 6;
+                }
+            }
+        }
+
         if (keyPressStarted)
         {
             keyTimer += Time.deltaTime;

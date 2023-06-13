@@ -9,6 +9,8 @@ public class BlockBehaviour : MonoBehaviour
     public bool stopped = false;
     public float sizeFactor;
 
+    public Transform[] subBlocks = new Transform[5];
+
     public List<int> rowsOccupied = new List<int>();
     public List<int> columnsOccupied = new List<int>();
 

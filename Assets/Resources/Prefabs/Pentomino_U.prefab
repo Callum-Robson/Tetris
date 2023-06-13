@@ -53,6 +53,12 @@ MonoBehaviour:
   blockManager: {fileID: 0}
   stopped: 0
   sizeFactor: 0
+  subBlocks:
+  - {fileID: 8363398699503536691}
+  - {fileID: 2484471708031417173}
+  - {fileID: 2427107554255994938}
+  - {fileID: 4644082262979184305}
+  - {fileID: 3060770219051267545}
   rowsOccupied: 
   columnsOccupied: 
 --- !u!1001 &2878269296562643591
