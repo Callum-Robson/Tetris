@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class BlockBehaviour : MonoBehaviour
 {
+    public Vector2 currentMaxAllowablePosition;
+    public Vector2 currentMinAllowablePosition;
+
     public BlockData blockData;
     public BlockManager blockManager;
     public bool stopped = false;

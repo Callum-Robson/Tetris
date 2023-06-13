@@ -48,8 +48,8 @@ public class BlockManager : MonoBehaviour
         //    default:
         //        break;
         //}
-        bounds.width = 6 * sizeFactorX;
-        bounds.height = 10 * sizeFactorY;
+       // bounds.width = 6 * sizeFactorX;
+       // bounds.height = 10 * sizeFactorY;
         bounds.center = Vector2.zero;
         Debug.Log("Bounds.Min = " + bounds.min);
         Debug.Log("Bound.Max = " + bounds.max);
@@ -62,12 +62,12 @@ public class BlockManager : MonoBehaviour
     {
         if (fallingBlock.transform.position.x > -fallingBlock.blockData.maxAllowablePosition.x)
             canMoveLeft = true;
-        else
-            canMoveLeft = false;
+        //else
+        //    canMoveLeft = false;
         if (fallingBlock.transform.position.x < fallingBlock.blockData.maxAllowablePosition.x)
             canMoveRight = true;
-        else
-            canMoveRight = false;
+        //else
+        //    canMoveRight = false;
 
         if (Input.GetKeyDown(KeyCode.A) && canMoveLeft)
         {
@@ -220,6 +220,40 @@ public class BlockManager : MonoBehaviour
                     fallingBlock.transform.position += Vector3.right * x;
                 else if (y != 0)
                     fallingBlock.transform.position += Vector3.up * y;
+            }
+        }
+
+        Vector2 tempPosition = fallingBlock.transform.position;
+        float tempX = fallingBlock.transform.position.x;
+        float tempY = fallingBlock.transform.position.y;
+
+        for (int i = 0; i < 5; i++)
+        {
+            if (!bounds.Contains(fallingBlock.subBlocks[i].transform.position))
+            {                
+                if (tempX < bounds.min.x)
+                {
+                    ResetKeys();
+
+                    tempPosition.x = Mathf.Round(tempPosition.x);
+                    if(tempPosition.x < bounds.min.x)
+                    {
+                        tempPosition.x++;
+                    }
+                    fallingBlock.transform.position = tempPosition;
+                }
+                else if (tempX > bounds.max.x)
+                {
+                    ResetKeys();
+
+                    tempPosition.x = Mathf.Round(tempPosition.x);
+                    if(tempPosition.x > bounds.min.x)
+                    {
+                        tempPosition.x--;
+                    }
+                    fallingBlock.transform.position = tempPosition;
+                }
+                i = 6;
             }
         }
 
