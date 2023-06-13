@@ -9,6 +9,9 @@ public class BlockBehaviour : MonoBehaviour
     public bool stopped = false;
     public float sizeFactor;
 
+    public List<int> rowsOccupied = new List<int>();
+    public List<int> columnsOccupied = new List<int>();
+
     private void Start()
     {
         blockManager = FindObjectOfType<BlockManager>();

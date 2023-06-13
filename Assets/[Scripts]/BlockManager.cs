@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BlockManager : MonoBehaviour
 {
+
     public float keyHoldThresholdTime = 1.0f;
     public float fastBlockSpeed = 0.01f;
     private bool keyHeld;
@@ -282,6 +283,63 @@ public class BlockManager : MonoBehaviour
         activeBlocks.Add(fallingBlock);
 
         
+    }
+
+    public void SpawnBlockWithOffset()
+    {
+        //modify so odd and even dimensioned blocks are properly offset or not offset by 0.5
+        int randomBlock = Random.Range(0, 12);
+
+        float randomX = Random.Range(bounds.xMin, bounds.xMax + 1);
+
+        Debug.Log("randomX difference = " + (randomX - Mathf.Round(randomX)));
+
+        if (Mathf.Abs(randomX - Mathf.Round(randomX)) < 0.25)
+        {
+            randomX = Mathf.Round(randomX);
+        }
+        else
+        {
+            randomX = Mathf.Round(randomX);
+            randomX += 0.5f;
+        }
+
+        if (blockPrefabs[randomBlock].blockData.width % 2 == 0)
+        {
+            randomX -= (randomX % 1);
+        }
+
+        Vector2 minPosition = -blockPrefabs[randomBlock].blockData.maxAllowablePosition;
+        Vector2 maxPosition = blockPrefabs[randomBlock].blockData.maxAllowablePosition;
+
+        minPosition.x *= sizeFactorX;
+        minPosition.y *= sizeFactorY;
+
+        maxPosition.x *= sizeFactorX;
+        maxPosition.y *= sizeFactorY;
+
+        float ySpawn = maxPosition.y;
+
+        if (blockPrefabs[randomBlock].blockData.width % 2 != 0 && blockPrefabs[randomBlock].blockData.width != 1)
+        {
+            if (Random.Range(0, 2) == 0)
+                randomX -= 0.5f;
+            else
+                randomX += 0.5f;
+        }
+
+
+        if (minPosition.x > randomX)
+            randomX = minPosition.x;
+        else if (maxPosition.x < randomX)
+            randomX = maxPosition.x;
+
+        Vector3 spawnPosition = new Vector3(randomX, ySpawn, 0);
+
+        fallingBlock = Instantiate(blockPrefabs[randomBlock], spawnPosition, blockPrefabs[randomBlock].transform.rotation);
+        activeBlocks.Add(fallingBlock);
+
+
     }
 
     public bool DivisibleByHalfAndNotOne(float value)

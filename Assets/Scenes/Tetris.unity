@@ -3170,6 +3170,8 @@ MonoBehaviour:
   blockManager: {fileID: 0}
   stopped: 0
   sizeFactor: 0
+  rowsOccupied: 
+  columnsOccupied: 
 --- !u!4 &1566507267 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4142549416282973333, guid: 7f443e623b4df1a41bad4fa2ad7ccc7f, type: 3}
@@ -4112,6 +4114,8 @@ MonoBehaviour:
   blockManager: {fileID: 0}
   stopped: 0
   sizeFactor: 0
+  rowsOccupied: 
+  columnsOccupied: 
 --- !u!4 &1944024080 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4142549416282973333, guid: 7f443e623b4df1a41bad4fa2ad7ccc7f, type: 3}

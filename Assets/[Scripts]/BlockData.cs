@@ -8,6 +8,12 @@ public class BlockData : ScriptableObject
     public float width;
     public float height;
 
+    public Vector2 min_XY;
+    public Vector2 max_XY;
+
+
+    public Vector2[] subBlockCoordinates = new Vector2[5];
+
     public Vector2 maxAllowablePosition;
 
 }

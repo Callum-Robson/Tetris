@@ -14,4 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 3
   height: 3
+  min_XY: {x: -2, y: 0}
+  max_XY: {x: 0, y: 2}
+  subBlockCoordinates:
+  - {x: 0, y: 0}
+  - {x: -1, y: 0}
+  - {x: -2, y: 0}
+  - {x: 1, y: 0}
+  - {x: 2, y: 0}
   maxAllowablePosition: {x: 10.5, y: 18.5}
