@@ -6,17 +6,14 @@ public class BlockManager : MonoBehaviour
 {
 
     public float keyHoldThresholdTime = 1.0f;
-    public float fastBlockSpeed = 0.01f;
+    public float fastBlockSpeed = 1.0f;
     private bool keyHeld;
     private bool keyPressStarted;
     private bool canMoveRight, canMoveLeft;
-    private float x = 0;
-    private float y = 0;
+    private float inputX = 0;
+    private float inputY = 0;
     private float keyTimer = 0;
 
-    public float CameraSize = 5;
-    public float sizeFactorX = 1;
-    public float sizeFactorY = 1;
     public float secondCounter;
     public float elapsedTime;
 
@@ -29,6 +26,8 @@ public class BlockManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        bounds.width -= 1.0f;
+        bounds.height -= 1.0f;
         bounds.center = Vector2.zero;
         Debug.Log("Bounds.Min = " + bounds.min);
         Debug.Log("Bound.Max = " + bounds.max);
@@ -48,22 +47,22 @@ public class BlockManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.A) && canMoveLeft)
         {
             keyPressStarted = true;
-            x = -1;
+            inputX = -1;
         }
         else if (Input.GetKeyDown(KeyCode.D) && canMoveRight)
         {
             keyPressStarted = true;
-            x = 1;
+            inputX = 1;
         }
         else if (Input.GetKeyDown(KeyCode.S) && fallingBlock.transform.position.y > bounds.min.y + fallingBlock.blockData.min_XY.y)
         {
             keyPressStarted = true;
-            y = -1;
+            inputY = -1;
         }
         else if (!keyHeld)
         {
-            x = 0;
-            y = 0;
+            inputX = 0;
+            inputY = 0;
         }
 
         //B-2 Keys - Released
@@ -71,44 +70,44 @@ public class BlockManager : MonoBehaviour
             || (Input.GetKeyUp(KeyCode.S) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D)))
         {
             Debug.Log("Key up triggered");
-            x = 0;
-            y = 0;
+            inputX = 0;
+            inputY = 0;
             keyPressStarted = false;
             keyTimer = 0;
             keyHeld = false;
 
-            SnapToGrid();
+            fallingBlock.SnapToGrid();  // SnapToGrid();
         }
         //B-3 Keys - Switched
         if (Input.GetKeyUp(KeyCode.A) && Input.GetKey(KeyCode.D))
         {
-            x = 1;
-            y = 0;
+            inputX = 1;
+            inputY = 0;
         }
         else if (Input.GetKeyUp(KeyCode.A) && Input.GetKey(KeyCode.S))
         {
-            x = 0;
-            y = 1;
+            inputX = 0;
+            inputY = 1;
         }
         if (Input.GetKeyUp(KeyCode.D) && Input.GetKey(KeyCode.A))
         {
-            x = -1;
-            y = 0;
+            inputX = -1;
+            inputY = 0;
         }
         else if (Input.GetKeyUp(KeyCode.D) && Input.GetKey(KeyCode.S))
         {
-            x = 0;
-            y = -1;
+            inputX = 0;
+            inputY = -1;
         }
         if (Input.GetKeyUp(KeyCode.S) && Input.GetKey(KeyCode.A))
         {
-            y = 0;
-            x = -1;
+            inputY = 0;
+            inputX = -1;
         }
         else if (Input.GetKeyUp(KeyCode.S) && Input.GetKey(KeyCode.D))
         {
-            y = 0;
-            x = 1;
+            inputY = 0;
+            inputX = 1;
         }
 
         //B-4 Keys - Held 
@@ -119,17 +118,17 @@ public class BlockManager : MonoBehaviour
             {
                 keyHeld = true;
                 if (Input.GetKey(KeyCode.A) && canMoveLeft)
-                    x = -fastBlockSpeed * Time.deltaTime;
+                    inputX = -fastBlockSpeed * Time.deltaTime;
                 else if (Input.GetKey(KeyCode.D) && canMoveRight)
-                    x = fastBlockSpeed * Time.deltaTime;
+                    inputX = fastBlockSpeed * Time.deltaTime;
                 else if (Input.GetKey(KeyCode.S))
-                    y = -fastBlockSpeed * Time.deltaTime;
+                    inputY = -fastBlockSpeed * Time.deltaTime;
 
-                if (!canMoveRight && x > 0)
+                if (!canMoveRight && inputX > 0)
                 {
                     ResetKeys();
                 }
-                if (!canMoveLeft && x < 0)
+                if (!canMoveLeft && inputX < 0)
                 {
                     ResetKeys();
                 }
@@ -142,18 +141,18 @@ public class BlockManager : MonoBehaviour
             if (keyHeld)
             {
                 Debug.Log("Key held movement");
-                if (x != 0)
-                    fallingBlock.transform.position += Vector3.right * x;
-                else if (y != 0)
-                    fallingBlock.transform.position += Vector3.up * y;
+                if (inputX != 0)
+                    fallingBlock.transform.position += Vector3.right * inputX;
+                else if (inputY != 0)
+                    fallingBlock.transform.position += Vector3.up * inputY;
             }
             else if (keyPressStarted)
             {
                 Debug.Log("Key press movement");
-                if (x != 0)
-                    fallingBlock.transform.position += Vector3.right * x;
-                else if (y != 0)
-                    fallingBlock.transform.position += Vector3.up * y;
+                if (inputX != 0)
+                    fallingBlock.transform.position += Vector3.right * inputX;
+                else if (inputY != 0)
+                    fallingBlock.transform.position += Vector3.up * inputY;
             }
         }
 
@@ -209,6 +208,7 @@ public class BlockManager : MonoBehaviour
                     i = 6;
                 }
             }
+            fallingBlock.UpdatePositionData();
         }
 
 
@@ -219,6 +219,7 @@ public class BlockManager : MonoBehaviour
             elapsedTime += secondCounter;
             secondCounter = 0.0f;
             fallingBlock.transform.position += Vector3.down;
+            fallingBlock.UpdatePositionData();
         }
 
         //E-1 Spawn Blocks
@@ -265,8 +266,8 @@ public class BlockManager : MonoBehaviour
 
     public void ResetKeys()
     {
-        x = 0;
-        y = 0;
+        inputX = 0;
+        inputY = 0;
         keyHeld = false;
         keyPressStarted = false;
         keyTimer = 0;
@@ -282,23 +283,32 @@ public class BlockManager : MonoBehaviour
             float xPosition = fallingBlock.transform.position.x;
 
             //Get offset from nearest 0.5
-            float xOffset = (xPosition % 0.5f);
+            float xOffset = xPosition > 0 ? (xPosition % 0.5f) : (xPosition % -0.5f);
 
             //Round down if offset less than 0.25
-            if (xOffset < 0.25f)
+            if (Mathf.Abs(xOffset) < 0.25f)
             {
-                if (xPosition - xOffset > -fallingBlock.blockData.maxAllowablePosition.x)
-                    xPosition -= xOffset;
+                // Operation will always reduce absolute value, so should never result in block moving out of bounds unless it already was.
+                xPosition -= xOffset;
             }
             //Round up if offset greater than 0.25
-            else if (xOffset > 0.25f)
+            else if (Mathf.Abs(xOffset) > 0.25f)
             {
-                if (xPosition - xOffset > -fallingBlock.blockData.maxAllowablePosition.x)
-                    xPosition -= xOffset;
-                if (xPosition + 0.5f <= fallingBlock.blockData.maxAllowablePosition.x)
-                    xPosition += 0.5f;
+                // Round down absolute value
+                xPosition -= xOffset;
+                // If rounding "up" for negative number, subtract 0.5, if rounding up for position, add 0.5
+                float roundingValue = xOffset < 0 ? -0.5f : 0.5f;
+                // If xPosition is positive and xPosition rounded up is less than max position, make it so
+                if (xPosition > 0 && xPosition + roundingValue <= fallingBlock.CurrentMax_XY.x)
+                {
+                    xPosition += roundingValue;
+                }
+                // If xPosition is negative and xPosition rounded "up" is greater than min position, make it so
+                else if (xPosition < 0 && xPosition + roundingValue >= fallingBlock.CurrentMin_XY.x)
+                {
+                    xPosition += roundingValue;
+                }
             }
-
             //Apply corrected position
             fallingBlock.transform.position = new Vector3(xPosition, fallingBlock.transform.position.y, fallingBlock.transform.position.z);
             Debug.Log("Snapped odd block,  New xPosition = " + xPosition);
@@ -307,7 +317,7 @@ public class BlockManager : MonoBehaviour
 
     public void CheckBlockAgainstBounds()
     {
-        // If fallingBlock position.x is larger than bounds.min.x (-11.5) minus fallingBlock's min.x (always 0 or less), there is still room to move left
+        // If position.x is greater than bounds.min.x (-11.5) minus fallingBlock's min.x (always 0 or less), there is still room to move left
         if (fallingBlock.transform.position.x > bounds.min.x - fallingBlock.blockData.min_XY.x)
             canMoveLeft = true;
         else
@@ -319,14 +329,6 @@ public class BlockManager : MonoBehaviour
         else
             canMoveRight = false;
 
-        //if (fallingBlock.transform.position.x > -fallingBlock.blockData.maxAllowablePosition.x)
-        //    canMoveLeft = true;
-        //else
-        //    canMoveLeft = false;
-        //if (fallingBlock.transform.position.x < fallingBlock.blockData.maxAllowablePosition.x)
-        //    canMoveRight = true;
-        //else
-        //    canMoveRight = false;
     }
     public bool DivisibleByHalfAndNotOne(float value)
     {

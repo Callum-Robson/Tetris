@@ -14,6 +14,4 @@ public class BlockData : ScriptableObject
 
     public Vector2[] subBlockCoordinates = new Vector2[5];
 
-    public Vector2 maxAllowablePosition;
-
 }
