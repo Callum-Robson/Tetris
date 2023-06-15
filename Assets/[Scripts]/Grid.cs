@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
-    public GridCell[,] cells;
+    public DebugGridCell debugCell;
+    public static GridCell[,] cells;
     [SerializeField]
     private int columnCount = 24;
     [SerializeField]
@@ -26,6 +27,9 @@ public class Grid : MonoBehaviour
             {
                 // cells[i, i2].position = new Vector2(bounds.min.x + 0.5f + (1.0f * i), bounds.min.y + 0.5f + (1.0f * i2)); //new GridCell(bounds.min.x + 0.5f + (1.0f * i), bounds.min.y + 0.5f + (1.0f * i2));
                 cells[i, i2] = new GridCell(bounds.min.x + 0.5f + (1.0f * i), bounds.min.y + 0.5f + (1.0f * i2));
+                cells[i, i2].debugCell = Instantiate(debugCell, transform);
+                cells[i, i2].InitializeDebugCell();
+
             }
         }
         Debug.Log("Cells generated");
@@ -36,12 +40,6 @@ public class Grid : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        for (int i = 0; i < columnCount; i++)
-        {
-            for (int i2 = 0; i2 < rowCount; i2++)
-            {
-                Debug.Log("Cell " + i + "," + i2 + " position = " + cells[i, i2].position);
-            }
-        }
+       
     }
 }
