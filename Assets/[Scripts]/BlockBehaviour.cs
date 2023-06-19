@@ -34,6 +34,7 @@ public class BlockBehaviour : MonoBehaviour
         currentMin_XY = blockData.min_XY;
         currentMax_XY = blockData.max_XY;
         currentSubBlockCoordinates = blockData.subBlockCoordinates;
+        UpdatePositionData();
     }
 
     // Update is called once per frame
@@ -42,16 +43,8 @@ public class BlockBehaviour : MonoBehaviour
         if (transform.position.y <= currentMin_XY.y && !stopped)
         {
             stopped = true;
-            NewSnapToGrid();
-            //SnapToGrid();
-            //Vector3 ySnap = transform.position;
-            //ySnap.y = blockManager.bounds.min.y - currentMin_XY.y;
-            //transform.position = ySnap;
             blockManager.ResetKeys();
         }
-        //currentMin_XY.x = blockManager.bounds.min.x - blockData.min_XY.x;
-        //currentMax_XY.x = blockManager.bounds.max.x - blockData.max_XY.x;
-        //currentMin_XY.y = blockManager.bounds.max.y - blockData.max_XY.y;
     }
 
     public void UpdatePositionData()
@@ -71,10 +64,6 @@ public class BlockBehaviour : MonoBehaviour
         pivotPointGridColumn = Mathf.RoundToInt(transform.position.x + 11.5f);
         pivotPointGridRow = Mathf.RoundToInt(transform.position.y + 19.5f);
 
-        //for (int i = 0; i < 5; i++)
-        //{
-        //    Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetColor(Color.red);
-        //}
 
         if (transform.position.y <= currentMax_XY.y)
         {
@@ -93,16 +82,32 @@ public class BlockBehaviour : MonoBehaviour
 
     public void CollisionCheck()
     {
+        int maxTopCellToCheck, maxBottomCellToCheck;
+        int maxRightCellToCheck, maxLeftCellToCheck;
+
+        maxTopCellToCheck = 39 - pivotPointGridRow < 3 ? 39 - pivotPointGridRow : 3;
+        maxBottomCellToCheck = pivotPointGridRow < 3 ? -2 : -3;
+        maxRightCellToCheck = pivotPointGridColumn > 20 ? 23 - pivotPointGridColumn : 3;
+        maxLeftCellToCheck = pivotPointGridColumn < 3 ? -pivotPointGridColumn : -3;
+
+        int actualTopCellToCheck = pivotPointGridRow + 3 < maxTopCellToCheck ? pivotPointGridRow + 3 : maxTopCellToCheck;
+        int actualBottomCellToCheck = pivotPointGridRow - 3 > maxBottomCellToCheck ? pivotPointGridRow - 3 : maxBottomCellToCheck;
+        int actualRightCellToCheck = pivotPointGridColumn + 3 < maxRightCellToCheck ? pivotPointGridColumn + 3 : maxRightCellToCheck;
+        int actualLeftCellToCheck = pivotPointGridColumn - 3 > maxLeftCellToCheck ? pivotPointGridColumn - 3 : maxLeftCellToCheck;
 
         occupiedAdjacentCells.Clear();
-        for (int i = 0; i < 3; i++)
+
+        //Iterate through rows from maxBottom to maxTop
+        for (int i = actualBottomCellToCheck; i <= actualRightCellToCheck;  i++)
         {
-            for (int i2 = 0; i2 < 3; i2++)
+
+            //Iterate through columns from maxLeft to maxRight;
+            for (int i2 = actualLeftCellToCheck; i2 <= actualRightCellToCheck; i2++)
             {
                 if (Grid.cells[i,i2].isFilled)
                 {
                     bool occupiedBySelf = false;
-                    for(int i3 = 0; i3 < 5; i3++)
+                    for (int i3 = 0; i3 < 5; i3++)
                     {
                         if (occupiedGridCells[i3].x == i && occupiedGridCells[i3].y == i2)
                         {
@@ -113,6 +118,13 @@ public class BlockBehaviour : MonoBehaviour
                         {
                             // Add cell grid coordinates to list
                             occupiedAdjacentCells.Add(new Vector2(i, i2));
+                            if (occupiedAdjacentCells[occupiedAdjacentCells.Count - 1].y == occupiedGridCells[i3].y - 1)
+                            {
+                                Debug.Log("Block landed on another block");
+                                stopped = true;
+                                occupiedAdjacentCells.Clear();
+                                break;
+                            }
                         }
                     }
                 }
@@ -125,7 +137,7 @@ public class BlockBehaviour : MonoBehaviour
     public void CheckBlockAgainstBounds()
     {
         // If position.x is greater than bounds.min.x (-11.5) minus fallingBlock's min.x (always 0 or less), there is still room to move left
-        if (transform.position.x >= currentMin_XY.x)//blockManager.bounds.min.x - currentMin_XY.x)
+        if (transform.position.x > currentMin_XY.x)//blockManager.bounds.min.x - currentMin_XY.x)
             canMoveLeft = true;
         else
         {
@@ -133,7 +145,7 @@ public class BlockBehaviour : MonoBehaviour
         }
 
         // If fallingBlock position.x is less than bounds.max.x (11.5) minus fallingBlock's max.x (always 0 or more), there is still room to move right
-        if (transform.position.x <= currentMax_XY.x )// blockManager.bounds.max.x - currentMax_XY.x)
+        if (transform.position.x < currentMax_XY.x )// blockManager.bounds.max.x - currentMax_XY.x)
             canMoveRight = true;
         else
             canMoveRight = false;
@@ -205,194 +217,200 @@ public class BlockBehaviour : MonoBehaviour
     {
         if (horizontal)
         {
+            CheckBlockAgainstBounds();
             transform.position += Vector3.right * value;
             CheckBlockAgainstBounds();
             //MoveBackInsideBounds();
         }
         else
         {
+            CheckBlockAgainstBounds();
             transform.position += Vector3.up * value;
             CheckBlockAgainstBounds();
             //MoveBackInsideBounds();
         }
     }
 
-    // Called on key up
-    public void SnapToGrid()
-    {
-        //Get Position;
-        float xPosition = transform.position.x;
-        float yPosition = transform.position.y;
-        //Get offset from nearest 0.5
-        float xOffset = xPosition > 0 ? (xPosition % 0.5f) : (xPosition % -0.5f);
-        //Get offset from nearest 0.5
-        float yOffset = yPosition > 0 ? (yPosition % 0.5f) : (yPosition % -0.5f);
-
-        Debug.Log("SnapToGrid called, y position is " + yPosition);
-
-        if (Mathf.Abs(yPosition - Mathf.Round(yPosition)) < 0.02f)
-        {
-            yPosition = Mathf.Round(yPosition);
-
-            Debug.Log("yPosition apx int, yPosition rounded to int");
-        }
-
-
-        // If x position is divisible by 0.5 and not divisible by 1... it wouldn't need to be snapped, so check if that's not true, and width is also not even (divisble by 2)
-        if (!blockManager.DivisibleByHalfAndNotOne(transform.position.x))
-        {
-
-
-            //Round down if offset less than 0.25
-            if (Mathf.Abs(xOffset) < 0.25f)
-            {
-                // Operation will always reduce absolute value, so should never result in block moving out of bounds unless it already was.
-                xPosition -= xOffset;
-            }
-            //Round up if offset greater than 0.25
-            else if (Mathf.Abs(xOffset) > 0.25f)
-            {
-                // Round down absolute value
-                xPosition -= xOffset;
-                // If rounding "up" for negative number, subtract 0.5, if rounding up for position, add 0.5
-                float roundingValue = xOffset < 0 ? -0.5f : 0.5f;
-                // If xPosition is positive and xPosition rounded up is less than max position, make it so
-                if (xPosition > 0 && xPosition + roundingValue <= currentMax_XY.x)
-                {
-                    xPosition += roundingValue;
-                }
-                // If xPosition is negative and xPosition rounded "up" is greater than min position, make it so
-                else if (xPosition < 0 && xPosition + roundingValue >= currentMin_XY.x)
-                {
-                    xPosition += roundingValue;
-                }
-            }
-        }
-
-        if (!blockManager.DivisibleByHalfAndNotOne(transform.position.y))
-        {
-            Debug.Log("1.Snapping y position");
-
-            Debug.Log("2.Y Offset = " + yOffset);
-            //Round down if offset less than 0.25
-            if (Mathf.Abs(yOffset) < 0.25f)
-            {
-                Debug.Log("yOffset < 0.25");
-                // Operation will always reduce absolute value, so should never result in block moving out of bounds unless it already was.
-                yPosition -= yOffset;
-                if (!blockManager.DivisibleByHalfAndNotOne(yPosition))
-                {
-                    yPosition += yPosition < 0 ? 0.5f : -0.5f;
-                }
-            }
-            //Round up if offset greater than 0.25
-            else if (Mathf.Abs(yOffset) > 0.25f)
-            {
-                Debug.Log("yOffset > 0.25");
-                // Round down absolute value
-                yPosition -= yOffset;
-                // If rounding "up" for negative number, subtract 0.5, if rounding up for position, add 0.5
-                float roundingValue = yOffset < 0 ? -0.5f : 0.5f;
-                // If yPosition is positive and yPosition rounded up is less than max position, make it so
-                if (yPosition > 0 && yPosition + roundingValue <= currentMax_XY.y)
-                {
-                    yPosition += roundingValue;
-                }
-                // If yPosition is negative and yPosition rounded "up" is greater than min position, make it so
-                else if (yPosition < 0 && yPosition + roundingValue >= currentMin_XY.y)
-                {
-                    yPosition += roundingValue;
-                }
-            }
-            Debug.Log("3. New Y Position = " + yPosition);
-        }
-        //Apply corrected position
-        transform.position = new Vector3(xPosition, yPosition, transform.position.z);
-    }
-
-
-    public void NewSnapToGrid()
-    {
-        float x = transform.position.x;
-        float y = transform.position.y;
-
-
-        // If x % 1 is leass than 0.05, number is basically and int, so just round it and +/- 0.5
-        if (x % 1 < 0.05)
-        {
-
-        }
-        // Otherwise, 
-
-        //Get offset from nearest 0.5
-        float xOffset = x > 0 ? (x % 0.5f) : (x % -0.5f);
-        //Get offset from nearest 0.5
-        float yOffset = y > 0 ? (y % 0.5f) : (y % -0.5f);
-
-
-        // If position.x is not divisible by only 0.5
-        if (!blockManager.DivisibleByHalfAndNotOne(x))
-        {
-            // Declare float newX. newX is equal to this block's position.x rounded to the nearest integer  //TODO: Rename newX to integerX;
-            float newX = Mathf.Round(x);
-            //If difference between position.x and rounded x is significant
-            if (Mathf.Abs(x - newX) >= 0.03f)
-            {
-                // Negative x values
-                if (newX < 0)
-                {
-                    //If (newX - 0.5) is greater than or equal to this block's lowest allowable x position, value will be within boundaries, so,        SUBTRACT 0.5 from newX
-                    if (newX - 0.5f >= currentMin_XY.x)
-                    {
-                        newX -= 0.5f;
-                    }
-                    //If (newX - 0.5) is less than this block's lowest allowable x position, value will be outside of boundaries, so,                   ADD 0.5 to newX instead
-                    else
-                        newX += 0.5f;
-                }
-                // Positive x values
-                else if (newX > 0)
-                {
-                    //If (newX + 0.5) is less than or equal to highest allowable x position, value will be within boundaries, so,                       ADD 0.5 to newX
-                    if (newX + 0.5f <= currentMax_XY.x)
-                    {
-                        newX += 0.5f;
-                    }
-                    //If (newX + 0.5) is greater than this block's highest allowable x position, value will be outside of boundaries, so,               SUBTRACT 0.5 from newX
-                    else
-                        newX -= 0.5f;
-                }
-            }
-            //else
-
-            x = newX;
-        }
-        if (!blockManager.DivisibleByHalfAndNotOne(y))
-        {
-            float newY = Mathf.Round(y);
-            if (Mathf.Abs(y - newY) >= 0.03f)
-            {
-                if (newY < 0)
-                {
-                    if (newY - 0.5f >= currentMin_XY.y)
-                    {
-                        newY -= 0.5f;
-                    }
-                    else
-                        newY += 0.5f;
-                }
-                else if (newY > 0)
-                {
-                    if (newY + 0.5f <= currentMax_XY.y)
-                    {
-                        newY += 0.5f;
-                    }
-                    else
-                        newY -= 0.5f;
-                }
-            }
-            y = newY;
-        }
-        transform.position = new Vector3(x, y, 0);
-    }
+ 
 }
+
+// No longer needed, only moving in exact increments
+
+//// Called on key up
+//public void SnapToGrid()
+//{
+//    //Get Position;
+//    float xPosition = transform.position.x;
+//    float yPosition = transform.position.y;
+//    //Get offset from nearest 0.5
+//    float xOffset = xPosition > 0 ? (xPosition % 0.5f) : (xPosition % -0.5f);
+//    //Get offset from nearest 0.5
+//    float yOffset = yPosition > 0 ? (yPosition % 0.5f) : (yPosition % -0.5f);
+//
+//    Debug.Log("SnapToGrid called, y position is " + yPosition);
+//
+//    if (Mathf.Abs(yPosition - Mathf.Round(yPosition)) < 0.02f)
+//    {
+//        yPosition = Mathf.Round(yPosition);
+//
+//        Debug.Log("yPosition apx int, yPosition rounded to int");
+//    }
+//
+//
+//    // If x position is divisible by 0.5 and not divisible by 1... it wouldn't need to be snapped, so check if that's not true, and width is also not even (divisble by 2)
+//    if (!blockManager.DivisibleByHalfAndNotOne(transform.position.x))
+//    {
+//
+//
+//        //Round down if offset less than 0.25
+//        if (Mathf.Abs(xOffset) < 0.25f)
+//        {
+//            // Operation will always reduce absolute value, so should never result in block moving out of bounds unless it already was.
+//            xPosition -= xOffset;
+//        }
+//        //Round up if offset greater than 0.25
+//        else if (Mathf.Abs(xOffset) > 0.25f)
+//        {
+//            // Round down absolute value
+//            xPosition -= xOffset;
+//            // If rounding "up" for negative number, subtract 0.5, if rounding up for position, add 0.5
+//            float roundingValue = xOffset < 0 ? -0.5f : 0.5f;
+//            // If xPosition is positive and xPosition rounded up is less than max position, make it so
+//            if (xPosition > 0 && xPosition + roundingValue <= currentMax_XY.x)
+//            {
+//                xPosition += roundingValue;
+//            }
+//            // If xPosition is negative and xPosition rounded "up" is greater than min position, make it so
+//            else if (xPosition < 0 && xPosition + roundingValue >= currentMin_XY.x)
+//            {
+//                xPosition += roundingValue;
+//            }
+//        }
+//    }
+//
+//    if (!blockManager.DivisibleByHalfAndNotOne(transform.position.y))
+//    {
+//        Debug.Log("1.Snapping y position");
+//
+//        Debug.Log("2.Y Offset = " + yOffset);
+//        //Round down if offset less than 0.25
+//        if (Mathf.Abs(yOffset) < 0.25f)
+//        {
+//            Debug.Log("yOffset < 0.25");
+//            // Operation will always reduce absolute value, so should never result in block moving out of bounds unless it already was.
+//            yPosition -= yOffset;
+//            if (!blockManager.DivisibleByHalfAndNotOne(yPosition))
+//            {
+//                yPosition += yPosition < 0 ? 0.5f : -0.5f;
+//            }
+//        }
+//        //Round up if offset greater than 0.25
+//        else if (Mathf.Abs(yOffset) > 0.25f)
+//        {
+//            Debug.Log("yOffset > 0.25");
+//            // Round down absolute value
+//            yPosition -= yOffset;
+//            // If rounding "up" for negative number, subtract 0.5, if rounding up for position, add 0.5
+//            float roundingValue = yOffset < 0 ? -0.5f : 0.5f;
+//            // If yPosition is positive and yPosition rounded up is less than max position, make it so
+//            if (yPosition > 0 && yPosition + roundingValue <= currentMax_XY.y)
+//            {
+//                yPosition += roundingValue;
+//            }
+//            // If yPosition is negative and yPosition rounded "up" is greater than min position, make it so
+//            else if (yPosition < 0 && yPosition + roundingValue >= currentMin_XY.y)
+//            {
+//                yPosition += roundingValue;
+//            }
+//        }
+//        Debug.Log("3. New Y Position = " + yPosition);
+//    }
+//    //Apply corrected position
+//    transform.position = new Vector3(xPosition, yPosition, transform.position.z);
+//}
+//
+//
+//public void NewSnapToGrid()
+//{
+//    float x = transform.position.x;
+//    float y = transform.position.y;
+//
+//
+//    // If x % 1 is leass than 0.05, number is basically and int, so just round it and +/- 0.5
+//    if (x % 1 < 0.05)
+//    {
+//
+//    }
+//    // Otherwise, 
+//
+//    //Get offset from nearest 0.5
+//    float xOffset = x > 0 ? (x % 0.5f) : (x % -0.5f);
+//    //Get offset from nearest 0.5
+//    float yOffset = y > 0 ? (y % 0.5f) : (y % -0.5f);
+//
+//
+//    // If position.x is not divisible by only 0.5
+//    if (!blockManager.DivisibleByHalfAndNotOne(x))
+//    {
+//        // Declare float newX. newX is equal to this block's position.x rounded to the nearest integer  //TODO: Rename newX to integerX;
+//        float newX = Mathf.Round(x);
+//        //If difference between position.x and rounded x is significant
+//        if (Mathf.Abs(x - newX) >= 0.03f)
+//        {
+//            // Negative x values
+//            if (newX < 0)
+//            {
+//                //If (newX - 0.5) is greater than or equal to this block's lowest allowable x position, value will be within boundaries, so,        SUBTRACT 0.5 from newX
+//                if (newX - 0.5f >= currentMin_XY.x)
+//                {
+//                    newX -= 0.5f;
+//                }
+//                //If (newX - 0.5) is less than this block's lowest allowable x position, value will be outside of boundaries, so,                   ADD 0.5 to newX instead
+//                else
+//                    newX += 0.5f;
+//            }
+//            // Positive x values
+//            else if (newX > 0)
+//            {
+//                //If (newX + 0.5) is less than or equal to highest allowable x position, value will be within boundaries, so,                       ADD 0.5 to newX
+//                if (newX + 0.5f <= currentMax_XY.x)
+//                {
+//                    newX += 0.5f;
+//                }
+//                //If (newX + 0.5) is greater than this block's highest allowable x position, value will be outside of boundaries, so,               SUBTRACT 0.5 from newX
+//                else
+//                    newX -= 0.5f;
+//            }
+//        }
+//        //else
+//
+//        x = newX;
+//    }
+//    if (!blockManager.DivisibleByHalfAndNotOne(y))
+//    {
+//        float newY = Mathf.Round(y);
+//        if (Mathf.Abs(y - newY) >= 0.03f)
+//        {
+//            if (newY < 0)
+//            {
+//                if (newY - 0.5f >= currentMin_XY.y)
+//                {
+//                    newY -= 0.5f;
+//                }
+//                else
+//                    newY += 0.5f;
+//            }
+//            else if (newY > 0)
+//            {
+//                if (newY + 0.5f <= currentMax_XY.y)
+//                {
+//                    newY += 0.5f;
+//                }
+//                else
+//                    newY -= 0.5f;
+//            }
+//        }
+//        y = newY;
+//    }
+//    transform.position = new Vector3(x, y, 0);
+//}

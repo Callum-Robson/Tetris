@@ -89,7 +89,7 @@ public class BlockManager : MonoBehaviour
                 keyTimer = 0;
                 keyHeld = false;
 
-                fallingBlock.NewSnapToGrid();  // SnapToGrid();
+                //fallingBlock.NewSnapToGrid();  // SnapToGrid();
             }
             //B-3 Keys - Switched
             if (Input.GetKeyUp(KeyCode.A) && Input.GetKey(KeyCode.D))
@@ -168,17 +168,6 @@ public class BlockManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.E))
             {
                 fallingBlock.Rotate();
-
-                //fallingBlock.transform.Rotate(new Vector3(0, 0, 90));
-                //for (int i = 0; i < 5; i++)
-                //{
-                //    if (!bounds.Contains(fallingBlock.subBlocks[i].transform.position))
-                //    {
-                //        fallingBlock.transform.Rotate(new Vector3(0, 0, -90));
-                //        i = 6;
-                //    }
-                //}
-                //fallingBlock.UpdatePositionData();
             }
 
 
@@ -193,6 +182,7 @@ public class BlockManager : MonoBehaviour
                     else if (inputY != 0)
                         fallingBlock.InputMovement(false, inputY); //fallingBlock.transform.position += Vector3.up * inputY;
                 }
+                fallingBlock.CollisionCheck();
                 eigthSecondCounter = 0.0f;
             }
 
@@ -205,6 +195,8 @@ public class BlockManager : MonoBehaviour
             {
                 if (inputY >= 0)
                     fallingBlock.Fall();
+
+                //fallingBlock.CollisionCheck();
                 halfSecondCounter = 0.0f;
             }
 
