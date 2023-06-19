@@ -156,9 +156,9 @@ public class BlockManager : MonoBehaviour
                 {
                     Debug.Log("Key press movement");
                     if (inputX != 0)
-                        fallingBlock.InputMovement(true, inputX); //fallingBlock.transform.position += Vector3.right * inputX;
+                        fallingBlock.CollisionCheck(MoveType.INPUT, true, inputX); //fallingBlock.InputMovement(true, inputX); 
                     else if (inputY != 0)
-                        fallingBlock.InputMovement(false, inputY); //fallingBlock.transform.position += Vector3.up * inputY;
+                        fallingBlock.CollisionCheck(MoveType.INPUT, false, inputY); //fallingBlock.InputMovement(false, inputY);
                 }
             //}
 
@@ -178,11 +178,11 @@ public class BlockManager : MonoBehaviour
                 {
                     Debug.Log("Key held movement");
                     if (inputX != 0)
-                        fallingBlock.InputMovement(true, inputX); //fallingBlock.transform.position += Vector3.right * inputX;
+                        fallingBlock.CollisionCheck(MoveType.INPUT, true, inputX);  //fallingBlock.InputMovement(true, inputX);
                     else if (inputY != 0)
-                        fallingBlock.InputMovement(false, inputY); //fallingBlock.transform.position += Vector3.up * inputY;
+                        fallingBlock.CollisionCheck(MoveType.INPUT, false, inputY); //fallingBlock.InputMovement(false, inputY);
                 }
-                fallingBlock.CollisionCheck();
+                //fallingBlock.CollisionCheck();
                 eigthSecondCounter = 0.0f;
             }
 
@@ -194,7 +194,7 @@ public class BlockManager : MonoBehaviour
             if (halfSecondCounter >= 0.5f)
             {
                 if (inputY >= 0)
-                    fallingBlock.Fall();
+                    fallingBlock.CollisionCheck(MoveType.FALL, false, 0.0f);    //fallingBlock.Fall();
 
                 //fallingBlock.CollisionCheck();
                 halfSecondCounter = 0.0f;

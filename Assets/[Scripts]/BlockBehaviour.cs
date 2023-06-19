@@ -2,6 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum MoveType
+{
+    FALL,
+    INPUT,
+    ROTATION
+}
 public class BlockBehaviour : MonoBehaviour
 {
     public BlockData blockData;
@@ -20,7 +26,6 @@ public class BlockBehaviour : MonoBehaviour
     public BlockManager blockManager;
     public Transform[] subBlocks = new Transform[5];
 
-    public List<Vector2> occupiedAdjacentCells = new List<Vector2>();
 
     public List<int> rowsOccupied = new List<int>();
     public List<int> columnsOccupied = new List<int>();
@@ -49,6 +54,42 @@ public class BlockBehaviour : MonoBehaviour
 
     public void UpdatePositionData()
     {
+       // for (int i = 0; i < 5; i++)
+       // {
+       //     currentSubBlockCoordinates[i] = subBlocks[i].transform.position;
+       // }
+       //
+       // // Bounds.min.x (-11.5) minus fallingBlock's min.x (always 0 or less) will always be greater than Bounds.min.x
+       // currentMin_XY.x = blockManager.bounds.min.x - blockData.min_XY.x;
+       // currentMax_XY.x = blockManager.bounds.max.x - blockData.max_XY.x;
+       // currentMax_XY.y = blockManager.bounds.max.y - blockData.max_XY.y;
+       // currentMin_XY.y = blockManager.bounds.min.y - blockData.min_XY.y; 
+       //
+       // // some formula to equate position to gric rows and columns.. grid column 0 = -11.5 x   grid row 0 = -19.5y
+       // pivotPointGridColumn = Mathf.RoundToInt(transform.position.x + 11.5f);
+       // pivotPointGridRow = Mathf.RoundToInt(transform.position.y + 19.5f);
+       //
+       //
+       // if (transform.position.y <= currentMax_XY.y)
+       // {
+       //     for (int i = 0; i < occupiedGridCells.Length; i++)
+       //     {
+       //         
+       //         Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].isFilled = false;
+       //         Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetColor(Color.green);
+       //         occupiedGridCells[i].x = Mathf.RoundToInt(subBlocks[i].transform.position.x + 11.5f);
+       //         occupiedGridCells[i].y = Mathf.RoundToInt(subBlocks[i].transform.position.y + 19.5f);
+       //         Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].isFilled = true;
+       //         Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetColor(Color.red); // null error here, because of block moving beyond boundary
+       //         Debug.Log("falling block occupied grid cells = " + (int)occupiedGridCells[i].x + ", " + (int)occupiedGridCells[i].y);
+       //     }
+       // }
+       //
+       // Debug.Log(name + " currentMin = " + currentMin_XY + " , currentMax = " + currentMax_XY);
+    }
+
+    public void CollisionCheck(MoveType moveType, bool horizontal, float value)
+    {
         for (int i = 0; i < 5; i++)
         {
             currentSubBlockCoordinates[i] = subBlocks[i].transform.position;
@@ -58,80 +99,156 @@ public class BlockBehaviour : MonoBehaviour
         currentMin_XY.x = blockManager.bounds.min.x - blockData.min_XY.x;
         currentMax_XY.x = blockManager.bounds.max.x - blockData.max_XY.x;
         currentMax_XY.y = blockManager.bounds.max.y - blockData.max_XY.y;
-        currentMin_XY.y = blockManager.bounds.min.y - blockData.min_XY.y; 
+        currentMin_XY.y = blockManager.bounds.min.y - blockData.min_XY.y;
 
         // some formula to equate position to gric rows and columns.. grid column 0 = -11.5 x   grid row 0 = -19.5y
         pivotPointGridColumn = Mathf.RoundToInt(transform.position.x + 11.5f);
         pivotPointGridRow = Mathf.RoundToInt(transform.position.y + 19.5f);
 
 
-        if (transform.position.y <= currentMax_XY.y)
+
+        for (int i = 0; i < occupiedGridCells.Length; i++)
         {
-            for (int i = 0; i < 5; i++)
-            {
-                Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetColor(Color.green);
-                occupiedGridCells[i].x = Mathf.RoundToInt(subBlocks[i].transform.position.x + 11.5f);
-                occupiedGridCells[i].y = Mathf.RoundToInt(subBlocks[i].transform.position.y + 19.5f);
-                Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetColor(Color.red); // null error here, because of block moving beyond boundary
-                Debug.Log("falling block occupied grid cells = " + (int)occupiedGridCells[i].x + ", " + (int)occupiedGridCells[i].y);
-            }
+            Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].isFilled = false;
+            Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetColor(Color.green);
+            occupiedGridCells[i].x = Mathf.RoundToInt(subBlocks[i].transform.position.x + 11.5f);
+            occupiedGridCells[i].y = Mathf.RoundToInt(subBlocks[i].transform.position.y + 19.5f);
+            Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].isFilled = true;
+            Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetColor(Color.red); // null error here, because of block moving beyond boundary
+            Debug.Log("falling block occupied grid cells = " + (int)occupiedGridCells[i].x + ", " + (int)occupiedGridCells[i].y);
         }
 
         Debug.Log(name + " currentMin = " + currentMin_XY + " , currentMax = " + currentMax_XY);
-    }
 
-    public void CollisionCheck()
-    {
+
+
+        //CheckBlockAgainstBounds();
+
+        if (moveType == MoveType.FALL)
+        {
+            Debug.Log("Type = fall");
+        }
+        if (moveType == MoveType.INPUT)
+        {
+            Debug.Log("Type = Input");
+        }
+
         int maxTopCellToCheck, maxBottomCellToCheck;
         int maxRightCellToCheck, maxLeftCellToCheck;
 
         maxTopCellToCheck = 39 - pivotPointGridRow < 3 ? 39 - pivotPointGridRow : 3;
-        maxBottomCellToCheck = pivotPointGridRow < 3 ? -2 : -3;
+        maxBottomCellToCheck = pivotPointGridRow < 3 ? - pivotPointGridRow : -3;
         maxRightCellToCheck = pivotPointGridColumn > 20 ? 23 - pivotPointGridColumn : 3;
         maxLeftCellToCheck = pivotPointGridColumn < 3 ? -pivotPointGridColumn : -3;
 
-        int actualTopCellToCheck = pivotPointGridRow + 3 < maxTopCellToCheck ? pivotPointGridRow + 3 : maxTopCellToCheck;
-        int actualBottomCellToCheck = pivotPointGridRow - 3 > maxBottomCellToCheck ? pivotPointGridRow - 3 : maxBottomCellToCheck;
-        int actualRightCellToCheck = pivotPointGridColumn + 3 < maxRightCellToCheck ? pivotPointGridColumn + 3 : maxRightCellToCheck;
-        int actualLeftCellToCheck = pivotPointGridColumn - 3 > maxLeftCellToCheck ? pivotPointGridColumn - 3 : maxLeftCellToCheck;
+        int actualTopCellToCheck = pivotPointGridRow + maxTopCellToCheck;           //pivotPointGridRow + 3 < maxTopCellToCheck ? pivotPointGridRow + 3 :pivotPointGridRow + maxTopCellToCheck;
+        int actualBottomCellToCheck = pivotPointGridRow + maxBottomCellToCheck;     //pivotPointGridRow - 3 > maxBottomCellToCheck ? pivotPointGridRow - 3 : pivotPointGridRow + maxBottomCellToCheck;
+        int actualRightCellToCheck = pivotPointGridColumn + maxRightCellToCheck;    //pivotPointGridColumn + 3 < maxRightCellToCheck ? pivotPointGridColumn + 3 : pivotPointGridColumn + maxRightCellToCheck;
+        int actualLeftCellToCheck = pivotPointGridColumn + maxLeftCellToCheck;      //pivotPointGridColumn - 3 > maxLeftCellToCheck ? pivotPointGridColumn - 3 : pivotPointGridColumn + maxLeftCellToCheck;
 
-        occupiedAdjacentCells.Clear();
+        List<Vector2> occupiedAdjacentCells = new List<Vector2>();
 
-        //Iterate through rows from maxBottom to maxTop
-        for (int i = actualBottomCellToCheck; i <= actualRightCellToCheck;  i++)
+        List<Vector2> filledCells = new List<Vector2>();
+
+        //Iterate through columns from maxLeft to maxRight
+        for (int i = actualLeftCellToCheck; i <= actualRightCellToCheck; i++)
         {
 
-            //Iterate through columns from maxLeft to maxRight;
-            for (int i2 = actualLeftCellToCheck; i2 <= actualRightCellToCheck; i2++)
+            //Iterate through rows from maxBottom to maxTop
+            for (int i2 = actualBottomCellToCheck; i2 <= actualTopCellToCheck; i2++)
             {
-                if (Grid.cells[i,i2].isFilled)
+                if (Grid.cells[i, i2].isFilled)
                 {
-                    bool occupiedBySelf = false;
-                    for (int i3 = 0; i3 < 5; i3++)
-                    {
-                        if (occupiedGridCells[i3].x == i && occupiedGridCells[i3].y == i2)
-                        {
-                            occupiedBySelf = true;
-                            i3 = 6;
-                        }
-                        if (!occupiedBySelf)
-                        {
-                            // Add cell grid coordinates to list
-                            occupiedAdjacentCells.Add(new Vector2(i, i2));
-                            if (occupiedAdjacentCells[occupiedAdjacentCells.Count - 1].y == occupiedGridCells[i3].y - 1)
-                            {
-                                Debug.Log("Block landed on another block");
-                                stopped = true;
-                                occupiedAdjacentCells.Clear();
-                                break;
-                            }
-                        }
-                    }
+                    filledCells.Add(new Vector2(i, i2));
                 }
             }
         }
 
+        List<int> cellsIndicesToRemove = new List<int>();
+
+        for (int i = 0; i < filledCells.Count; i++)
+        {
+            for (int i2 = 0; i2 < 5; i2++)
+            {
+                if (filledCells[i].x != occupiedGridCells[i2].x && filledCells[i].y != occupiedGridCells[i2].y)
+                {
+                    occupiedAdjacentCells.Add(filledCells[i]);
+                }
+            }
+        }
+
+
+        for (int i = 0; i < occupiedAdjacentCells.Count; i++)
+        {
+            for (int i2 = 0; i2 < 5; i2++)
+            {
+                if (occupiedAdjacentCells[i].x == occupiedGridCells[i2].x && occupiedAdjacentCells[i].y == occupiedGridCells[i2].y - 2)
+                {
+                    stopped = true;
+                }
+            }
+        }
+
+       ////Iterate through columns from maxLeft to maxRight
+       //for (int i = actualLeftCellToCheck; i <= actualRightCellToCheck;  i++)
+       //{
+       //
+       //    //Iterate through rows from maxBottom to maxTop
+       //    for (int i2 = actualBottomCellToCheck; i2 <= actualTopCellToCheck; i2++)
+       //    {
+       //        if (Grid.cells[i,i2].isFilled)
+       //        {
+       //            filledCells.Add(Grid.cells[i, i2].position);
+       //            bool occupiedBySelf = false;
+       //
+       //            for (int a = 0; a < 5; a++)
+       //            {
+       //                if (occupiedGridCells[a].x != i && occupiedGridCells[a].y != i2)
+       //                {
+       //                    occupiedBySelf = false;
+       //                }
+       //            }
+       //
+       //            for (int i3 = 0; i3 < 5; i3++)
+       //            {
+       //                if (occupiedGridCells[i3].x == i && occupiedGridCells[i3].y == i2)
+       //                {
+       //                    occupiedBySelf = true;
+       //                    i3 = 6;
+       //                }
+       //                if (!occupiedBySelf)
+       //                {
+       //                    // Add cell grid coordinates to list
+       //                    occupiedAdjacentCells.Add(new Vector2(i, i2));
+       //                    // This probably doesnt in any way check specifically the bottom subblocks of the block aginst the ones under it...
+       //                    if (occupiedAdjacentCells[occupiedAdjacentCells.Count - 1].y == occupiedGridCells[i3].y - 1)
+       //                    {
+       //                        Debug.Log("Block landed on another block");
+       //                        stopped = true;
+       //                        occupiedAdjacentCells.Clear();
+       //                        break;
+       //                    }
+       //                }
+       //            }
+       //        }
+       //    }
+       //}
+
         // Check if added cells are blocking movement or rotation before next change.
+
+        switch(moveType)
+        {
+            case (MoveType.FALL):
+                Fall();
+                break;
+            case (MoveType.INPUT):
+                InputMovement(horizontal, value);
+                break;
+            case (MoveType.ROTATION):
+                Rotate();
+                break;
+
+        }
     }
 
     public void CheckBlockAgainstBounds()
@@ -168,7 +285,10 @@ public class BlockBehaviour : MonoBehaviour
 
     public void Fall()
     {
-        transform.position += Vector3.down;
+        if (!stopped)
+        {
+            transform.position += Vector3.down;
+        }
         UpdatePositionData();
     }
 
@@ -217,16 +337,35 @@ public class BlockBehaviour : MonoBehaviour
     {
         if (horizontal)
         {
-            CheckBlockAgainstBounds();
-            transform.position += Vector3.right * value;
-            CheckBlockAgainstBounds();
+            //CheckBlockAgainstBounds();
+            if (!stopped)
+            {
+                transform.position += Vector3.right * value;
+
+                //NEW Start
+                UpdatePositionData();
+                //NEW End
+            }
+
+            //CheckBlockAgainstBounds();
             //MoveBackInsideBounds();
+
         }
         else
         {
-            CheckBlockAgainstBounds();
-            transform.position += Vector3.up * value;
-            CheckBlockAgainstBounds();
+            //CheckBlockAgainstBounds();
+
+            if(!stopped)
+            {
+                transform.position += Vector3.up * value;
+
+                //NEW Start
+                UpdatePositionData();
+                //NEW End
+            }
+
+            //CheckBlockAgainstBounds();
+
             //MoveBackInsideBounds();
         }
     }
