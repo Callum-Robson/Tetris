@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public enum MoveType
 {
@@ -24,7 +25,7 @@ public class BlockBehaviour : MonoBehaviour
     private Vector2[] occupiedGridCells = new Vector2[5];
 
     public BlockManager blockManager;
-    public Transform[] subBlocks = new Transform[5];
+    public SubBlockBehaviour[] subBlocks = new SubBlockBehaviour[5];
 
 
     public List<int> rowsOccupied = new List<int>();
@@ -35,21 +36,24 @@ public class BlockBehaviour : MonoBehaviour
 
     private void Start()
     {
-        blockManager = FindObjectOfType<BlockManager>();
+        //blockManager = FindObjectOfType<BlockManager>();
+        //subBlocks = GetComponentsInChildren<SubBlockBehaviour>();
+        //PrefabUtility.ApplyPrefabInstance(this.gameObject, InteractionMode.AutomatedAction);
         currentMin_XY = blockData.min_XY;
         currentMax_XY = blockData.max_XY;
         currentSubBlockCoordinates = blockData.subBlockCoordinates;
+
         UpdatePositionData();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (transform.position.y <= currentMin_XY.y && !stopped)
-        {
-            stopped = true;
-            blockManager.ResetKeys();
-        }
+       if (transform.position.y <= currentMin_XY.y && !stopped)
+       {
+           stopped = true;
+           blockManager.ResetKeys();
+       }
     }
 
     public void UpdatePositionData()
