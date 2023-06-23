@@ -28,9 +28,13 @@ public class BlockManager : MonoBehaviour
 
     public Grid theGrid;
 
+    private TheStateMachine stateMachine;
+    public TheStateMachine StateMachine { get { return stateMachine; } }
+
     // Start is called before the first frame update
     void Start()
     {
+        stateMachine = FindObjectOfType<TheStateMachine>();
         theGrid = FindObjectOfType<Grid>();
         bounds.width -= 1.0f;
         bounds.height -= 1.0f;
@@ -39,6 +43,24 @@ public class BlockManager : MonoBehaviour
         Debug.Log("Bound.Max = " + bounds.max);
 
         SpawnBlock();
+    }
+
+    public void UpdateOtherBlocks()
+    {
+        stateMachine.SetState(TheStateMachine.GameplayState.WaitingOnOtherUpdate);
+        // Check for filled lines
+
+        // If filled lines were found and removed, update any blocks which can now fall
+
+        // TODO: Either 1. Immediately update newly falling blocks to their end position (Easy Option) or 2. Lerp them or something which will take time and requiring more functions or coroutines or whatever (Hard Option)
+        if (fallingBlock.stopped)
+        {
+            stateMachine.SetState(TheStateMachine.GameplayState.WaitingForSpawn);
+        }
+        else
+        {
+            stateMachine.SetState(TheStateMachine.GameplayState.WaitingForTimer);
+        }
     }
 
     // Update is called once per frame
@@ -182,6 +204,7 @@ public class BlockManager : MonoBehaviour
                     else if (inputY != 0)
                         fallingBlock.CollisionCheck(MoveType.INPUT, false, inputY); //fallingBlock.InputMovement(false, inputY);
                 }
+                CheckForFilledRow();
                 //fallingBlock.CollisionCheck();
                 eigthSecondCounter = 0.0f;
             }
@@ -236,7 +259,7 @@ public class BlockManager : MonoBehaviour
         float maxPositionX = bounds.max.x - blockPrefabs[randomBlock].blockData.max_XY.x;
 
         // Y Position for spawn     ( Should this be above edge of screen or should block spawn completely on-screen? )
-        float ySpawn = bounds.max.y;
+        float ySpawn = bounds.max.y - blockPrefabs[randomBlock].blockData.max_XY.y;
 
         // If randomX is out of bounds, set it to minPositionX or maxPositionX, whichever is closest.
         if (minPositionX > randomX)
@@ -250,6 +273,70 @@ public class BlockManager : MonoBehaviour
         // Instantiate selected block prefab at generated position, with default rotation, as fallingBlock. Add to activeBlocks.
         fallingBlock = Instantiate(blockPrefabs[randomBlock], spawnPosition, blockPrefabs[randomBlock].transform.rotation);
         activeBlocks.Add(fallingBlock);
+
+        
+        stateMachine.SetState(TheStateMachine.GameplayState.WaitingForTimer);
+    }
+
+    public void WaitForTimer()
+    {
+        eigthSecondCounter += Time.deltaTime;
+        quarterSecondCounter += Time.deltaTime;
+        halfSecondCounter += Time.deltaTime;
+        secondCounter += Time.deltaTime;
+
+        //D-1 Timers
+        if (eigthSecondCounter >= 0.125f)
+        {
+            //if (keyHeld)
+            //{
+            //    Debug.Log("Key held movement");
+            //    if (inputX != 0)
+            //        fallingBlock.CollisionCheck(MoveType.INPUT, true, inputX);  //fallingBlock.InputMovement(true, inputX);
+            //    else if (inputY != 0)
+            //        fallingBlock.CollisionCheck(MoveType.INPUT, false, inputY); //fallingBlock.InputMovement(false, inputY);
+            //}
+            //CheckForFilledRow();
+
+            eigthSecondCounter = 0.0f;
+        }
+
+        if (quarterSecondCounter >= 0.25f)
+        {
+
+            quarterSecondCounter = 0.0f;
+        }
+        if (halfSecondCounter >= 0.5f)
+        {
+            //if (inputY >= 0)
+            //    fallingBlock.CollisionCheck(MoveType.FALL, false, 0.0f);
+            
+            halfSecondCounter = 0.0f;
+            stateMachine.SetState(TheStateMachine.GameplayState.CheckingCollision);
+        }
+
+        if (secondCounter >= 1.00f)
+        {
+            elapsedTime += secondCounter;
+            secondCounter = 0.0f;
+        }
+    }
+
+    public void CheckCollision()
+    {
+        stateMachine.SetState(TheStateMachine.GameplayState.WaitingOnCollisionCheck);
+        if (inputX != 0)
+        {
+            fallingBlock.CollisionCheck(MoveType.INPUT, true, inputX);
+        }
+        if (inputY < 0)
+        {
+            fallingBlock.CollisionCheck(MoveType.INPUT, false, inputY);
+        }
+        else if (inputY == 0)
+        {
+            fallingBlock.CollisionCheck(MoveType.FALL, false, 0.0f);
+        }
     }
 
     public void ResetKeys()
@@ -267,6 +354,28 @@ public class BlockManager : MonoBehaviour
             return true;
         else
             return false;
+    }
+
+    private void CheckForFilledRow()
+    {
+        for (int i = 0; i < 4; i++) // Grid.cells.GetLength(1); i++)
+        {
+            bool emptyCellFound = false;
+            for (int i2 = 0; i2 < Grid.cells.GetLength(0); i2++)
+            {
+                if (!Grid.cells[i2,i].isFilled)
+                {
+                    emptyCellFound = true;
+                    Debug.Log("Row #" + i + " has not been filled");
+                    break;
+                }
+            }
+            if (!emptyCellFound)
+            {
+                //Delete these subBlocks
+                Debug.Log("Row #" + i + " has been filled");
+            }
+        }
     }
 }
 
