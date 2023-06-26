@@ -38,7 +38,7 @@ public class BlockManager : MonoBehaviour
         theGrid = FindObjectOfType<Grid>();
         bounds.width -= 1.0f;
         bounds.height -= 1.0f;
-        bounds.center = Vector2.zero;
+        bounds.center = new Vector2(11.5f, 19.5f);
         Debug.Log("Bounds.Min = " + bounds.min);
         Debug.Log("Bound.Max = " + bounds.max);
 
@@ -66,19 +66,11 @@ public class BlockManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        eigthSecondCounter += Time.deltaTime;
-        quarterSecondCounter += Time.deltaTime;
-        halfSecondCounter += Time.deltaTime;
-        secondCounter += Time.deltaTime;
-        Debug.Log("secondCounter = " + secondCounter);
-        //A. Bounds Checking
-        //CheckBlockAgainstBounds();
-        if (!fallingBlock.stopped)
+        //Make sure this state is only active if falling block has not stopped
+        if(stateMachine.CurrentState == TheStateMachine.GameplayState.WaitingForTimer)
         {
-            fallingBlock.CheckBlockAgainstBounds();
-
-            //B. Input
-            //B-1 Keys - Pressed
+            //A Input
+            //A-1 Keys - Pressed
             if (Input.GetKeyDown(KeyCode.A) && fallingBlock.canMoveLeft)
             {
                 keyPressStarted = true;
@@ -153,11 +145,11 @@ public class BlockManager : MonoBehaviour
                 {
                     keyHeld = true;
                     if (Input.GetKey(KeyCode.A) && fallingBlock.canMoveLeft)
-                        inputX = -1;    // -fastBlockSpeed * Time.deltaTime;
+                        inputX = -1;  
                     else if (Input.GetKey(KeyCode.D) && fallingBlock.canMoveRight)
-                        inputX = 1;  //fastBlockSpeed * Time.deltaTime;
+                        inputX = 1;
                     else if (Input.GetKey(KeyCode.S))
-                        inputY = -1;    // -fastBlockSpeed * Time.deltaTime;
+                        inputY = -1;
 
                     if (!fallingBlock.canMoveRight && inputX > 0)
                     {
@@ -176,11 +168,11 @@ public class BlockManager : MonoBehaviour
 
                 if (keyPressStarted && !keyHeld)
                 {
-                    Debug.Log("Key press movement");
-                    if (inputX != 0)
-                        fallingBlock.CollisionCheck(MoveType.INPUT, true, inputX); //fallingBlock.InputMovement(true, inputX); 
-                    else if (inputY != 0)
-                        fallingBlock.CollisionCheck(MoveType.INPUT, false, inputY); //fallingBlock.InputMovement(false, inputY);
+                    //Debug.Log("Key press movement");
+                    //if (inputX != 0)
+                    //    fallingBlock.CollisionCheck(MoveType.INPUT, true, inputX); //fallingBlock.InputMovement(true, inputX); 
+                    //else if (inputY != 0)
+                    //    fallingBlock.CollisionCheck(MoveType.INPUT, false, inputY); //fallingBlock.InputMovement(false, inputY);
                 }
             //}
 
@@ -193,52 +185,52 @@ public class BlockManager : MonoBehaviour
             }
 
 
-            //D-1 Timers
-            if (eigthSecondCounter >= 0.125f)
-            {
-                if (keyHeld)
-                {
-                    Debug.Log("Key held movement");
-                    if (inputX != 0)
-                        fallingBlock.CollisionCheck(MoveType.INPUT, true, inputX);  //fallingBlock.InputMovement(true, inputX);
-                    else if (inputY != 0)
-                        fallingBlock.CollisionCheck(MoveType.INPUT, false, inputY); //fallingBlock.InputMovement(false, inputY);
-                }
-                CheckForFilledRow();
-                //fallingBlock.CollisionCheck();
-                eigthSecondCounter = 0.0f;
-            }
-
-            if (quarterSecondCounter >= 0.25f)
-            {
-
-                quarterSecondCounter = 0.0f;
-            }
-            if (halfSecondCounter >= 0.5f)
-            {
-                if (inputY >= 0)
-                    fallingBlock.CollisionCheck(MoveType.FALL, false, 0.0f);    //fallingBlock.Fall();
-
-                //fallingBlock.CollisionCheck();
-                halfSecondCounter = 0.0f;
-            }
-
-            if (secondCounter >= 1.00f)// && !fallingBlock.stopped)
-            {
-                elapsedTime += secondCounter;
-                secondCounter = 0.0f;
-                //fallingBlock.transform.position += Vector3.down;
-                //fallingBlock.UpdatePositionData();
-            }
+            ////D-1 Timers
+            //if (eigthSecondCounter >= 0.125f)
+            //{
+            //    if (keyHeld)
+            //    {
+            //       // Debug.Log("Key held movement");
+            //       // if (inputX != 0)
+            //       //     fallingBlock.CollisionCheck(MoveType.INPUT, true, inputX);  //fallingBlock.InputMovement(true, inputX);
+            //       // else if (inputY != 0)
+            //       //     fallingBlock.CollisionCheck(MoveType.INPUT, false, inputY); //fallingBlock.InputMovement(false, inputY);
+            //    }
+            //    //CheckForFilledRow();
+            //    //fallingBlock.CollisionCheck();
+            //    eigthSecondCounter = 0.0f;
+            //}
+            //
+            //if (quarterSecondCounter >= 0.25f)
+            //{
+            //
+            //    quarterSecondCounter = 0.0f;
+            //}
+            //if (halfSecondCounter >= 0.5f)
+            //{
+            //    if (inputY >= 0)
+            //        //fallingBlock.CollisionCheck(MoveType.FALL, false, 0.0f);    //fallingBlock.Fall();
+            //
+            //    //fallingBlock.CollisionCheck();
+            //    halfSecondCounter = 0.0f;
+            //}
+            //
+            //if (secondCounter >= 1.00f)// && !fallingBlock.stopped)
+            //{
+            //    elapsedTime += secondCounter;
+            //    secondCounter = 0.0f;
+            //    //fallingBlock.transform.position += Vector3.down;
+            //    //fallingBlock.UpdatePositionData();
+            //}
 
         }
 
         //E-1 Spawn Blocks
-        if (fallingBlock.stopped)
-        {   // Remove fallingBlock reference, spawn a new Block.
-            fallingBlock = null;
-            SpawnBlock();
-        }
+        //if (fallingBlock.stopped)
+        //{   // Remove fallingBlock reference, spawn a new Block.
+        //    fallingBlock = null;
+        //    SpawnBlock();
+        //}
     }
 
     public void SpawnBlock()
@@ -249,10 +241,10 @@ public class BlockManager : MonoBehaviour
         float randomX = (int)Random.Range(bounds.xMin, bounds.xMax + 1);
 
         // Add or Subtract 0.5 from generated integer value
-        if (Random.Range(0,2) == 0)
-            randomX += 0.5f;
-        else
-            randomX -= 0.5f;
+        //if (Random.Range(0,2) == 0)
+        //    randomX += 0.5f;
+        //else
+        //    randomX -= 0.5f;
 
         // Calculate minimum and maxium x position selected block can occupy while remaining in bounds.
         float minPositionX = -blockPrefabs[randomBlock].blockData.min_XY.x + bounds.min.x;
@@ -280,39 +272,28 @@ public class BlockManager : MonoBehaviour
 
     public void WaitForTimer()
     {
+        bool stateChanged = false;
         eigthSecondCounter += Time.deltaTime;
         quarterSecondCounter += Time.deltaTime;
         halfSecondCounter += Time.deltaTime;
         secondCounter += Time.deltaTime;
 
         //D-1 Timers
-        if (eigthSecondCounter >= 0.125f)
+        if (eigthSecondCounter >= 0.125f && !stateChanged)
         {
-            //if (keyHeld)
-            //{
-            //    Debug.Log("Key held movement");
-            //    if (inputX != 0)
-            //        fallingBlock.CollisionCheck(MoveType.INPUT, true, inputX);  //fallingBlock.InputMovement(true, inputX);
-            //    else if (inputY != 0)
-            //        fallingBlock.CollisionCheck(MoveType.INPUT, false, inputY); //fallingBlock.InputMovement(false, inputY);
-            //}
-            //CheckForFilledRow();
-
+            if (keyHeld)
+            {
+                stateMachine.SetState(TheStateMachine.GameplayState.CheckingCollision);
+                stateChanged = true;
+            }
             eigthSecondCounter = 0.0f;
         }
 
-        if (quarterSecondCounter >= 0.25f)
+        if (halfSecondCounter >= 0.5f && !stateChanged)
         {
-
-            quarterSecondCounter = 0.0f;
-        }
-        if (halfSecondCounter >= 0.5f)
-        {
-            //if (inputY >= 0)
-            //    fallingBlock.CollisionCheck(MoveType.FALL, false, 0.0f);
-            
             halfSecondCounter = 0.0f;
             stateMachine.SetState(TheStateMachine.GameplayState.CheckingCollision);
+            stateChanged = true;
         }
 
         if (secondCounter >= 1.00f)
@@ -363,7 +344,7 @@ public class BlockManager : MonoBehaviour
             bool emptyCellFound = false;
             for (int i2 = 0; i2 < Grid.cells.GetLength(0); i2++)
             {
-                if (!Grid.cells[i2,i].isFilled)
+                if (!Grid.cells[i2,i].GetFilledState())
                 {
                     emptyCellFound = true;
                     Debug.Log("Row #" + i + " has not been filled");
@@ -377,6 +358,7 @@ public class BlockManager : MonoBehaviour
             }
         }
     }
+
 }
 
 
@@ -420,188 +402,5 @@ public class BlockManager : MonoBehaviour
 //}
 
 
-//Moved to BlockBehaviour
-//public void SnapToGrid()
-//{
-//    // Snap Odd numbered blocks to int +/- 0.5
-//    // If x position is divisible by 0.5 and not divisible by 1... it wouldn't need to be snapped, so check if that's not true, and width is also not even (divisble by 2)
-//    if (!DivisibleByHalfAndNotOne(fallingBlock.transform.position.x))
-//    {
-//        //Get X Position;
-//        float xPosition = fallingBlock.transform.position.x;
-//
-//        //Get offset from nearest 0.5
-//        float xOffset = xPosition > 0 ? (xPosition % 0.5f) : (xPosition % -0.5f);
-//
-//        //Round down if offset less than 0.25
-//        if (Mathf.Abs(xOffset) < 0.25f)
-//        {
-//            // Operation will always reduce absolute value, so should never result in block moving out of bounds unless it already was.
-//            xPosition -= xOffset;
-//        }
-//        //Round up if offset greater than 0.25
-//        else if (Mathf.Abs(xOffset) > 0.25f)
-//        {
-//            // Round down absolute value
-//            xPosition -= xOffset;
-//            // If rounding "up" for negative number, subtract 0.5, if rounding up for position, add 0.5
-//            float roundingValue = xOffset < 0 ? -0.5f : 0.5f;
-//            // If xPosition is positive and xPosition rounded up is less than max position, make it so
-//            if (xPosition > 0 && xPosition + roundingValue <= fallingBlock.CurrentMax_XY.x)
-//            {
-//                xPosition += roundingValue;
-//            }
-//            // If xPosition is negative and xPosition rounded "up" is greater than min position, make it so
-//            else if (xPosition < 0 && xPosition + roundingValue >= fallingBlock.CurrentMin_XY.x)
-//            {
-//                xPosition += roundingValue;
-//            }
-//        }
-//        //Apply corrected position
-//        fallingBlock.transform.position = new Vector3(xPosition, fallingBlock.transform.position.y, fallingBlock.transform.position.z);
-//        Debug.Log("Snapped odd block,  New xPosition = " + xPosition);
-//    }
-//}
-
-//Moved to BlockBehaviour
-//public void CheckBlockAgainstBounds()
-//{
-//    // If position.x is greater than bounds.min.x (-11.5) minus fallingBlock's min.x (always 0 or less), there is still room to move left
-//    if (fallingBlock.transform.position.x > bounds.min.x - fallingBlock.blockData.min_XY.x)
-//        canMoveLeft = true;
-//    else
-//        canMoveLeft = false;
-//
-//    // If fallingBlock position.x is less than bounds.max.x (11.5) minus fallingBlock's max.x (always 0 or more), there is still room to move right
-//    if (fallingBlock.transform.position.x < bounds.max.x - fallingBlock.blockData.max_XY.x)
-//        canMoveRight = true;
-//    else
-//        canMoveRight = false;
-//
-//}
 
 
-
-//public void SnapToGridOld()
-//{
-//    //Snap even numbered blocks to int
-//    if (fallingBlock.blockData.width % 2 == 0 && fallingBlock.transform.position.x % 2 != 0)
-//    {
-//        float xPosition = fallingBlock.transform.position.x;
-//        Debug.Log("xPosition = " + xPosition);
-//        float xOffset = (xPosition % 1);
-//        Debug.Log("xOffset = " + xOffset);
-//
-//        // Round down
-//        if (xOffset < 0.25f)
-//        {
-//            if (xPosition - xOffset > -fallingBlock.blockData.maxAllowablePosition.x)
-//                xPosition -= xOffset;
-//        }
-//        //else if (xOffset > 0.25f && xOffset < 0.75f)
-//        //{
-//        //    xPosition -= xOffset;
-//        //    xPosition += 0.5f;
-//        //}
-//
-//        // Round up
-//        else if (xOffset > 0.75f)
-//        {
-//            if (xPosition - xOffset > -fallingBlock.blockData.maxAllowablePosition.x)
-//                xPosition -= xOffset;
-//            if (xPosition + 1.0f < fallingBlock.blockData.maxAllowablePosition.x)
-//                xPosition += 1.0f;
-//        }
-//        Debug.Log("Snapped even block,  New xPosition = " + xPosition);
-//        fallingBlock.transform.position = new Vector3(xPosition, fallingBlock.transform.position.y, fallingBlock.transform.position.z);
-//    }
-//    // Snap Odd numbered blocks to int +/- 0.5
-//    // If x position is divisible by 0.5 and not divisible by 1... it wouldn't need to be snapped, so check if that's not true, and width is also not even (divisble by 2)
-//    else if (fallingBlock.blockData.width % 2 != 0 && !DivisibleByHalfAndNotOne(fallingBlock.transform.position.x))
-//    {
-//        bool snapped = false;
-//
-//        //Get X Position;
-//        float xPosition = fallingBlock.transform.position.x;
-//        Debug.Log("xPosition = " + xPosition);
-//
-//        //Get difference between 
-//        float xOffset = (xPosition % 0.5f);
-//        Debug.Log("xOffset = " + xOffset);
-//
-//        if (xOffset < 0.25f)
-//        {
-//            if (xPosition - xOffset > -fallingBlock.blockData.maxAllowablePosition.x)
-//                xPosition -= xOffset;
-//        }
-//        else if (xOffset > 0.25f)
-//        {
-//            if (xPosition - xOffset > -fallingBlock.blockData.maxAllowablePosition.x)
-//                xPosition -= xOffset;
-//            if (xPosition + 0.5f <= fallingBlock.blockData.maxAllowablePosition.x)
-//                xPosition += 0.5f;
-//        }
-//
-//        Debug.Log("Snapped odd block,  New xPosition = " + xPosition);
-//        fallingBlock.transform.position = new Vector3(xPosition, fallingBlock.transform.position.y, fallingBlock.transform.position.z);
-//    }
-//}
-
-
-
-//public void SpawnBlockWithOffset()
-//{
-//    //modify so odd and even dimensioned blocks are properly offset or not offset by 0.5
-//    int randomBlock = Random.Range(0, 12);
-//
-//    float randomX = Random.Range(bounds.xMin, bounds.xMax + 1);
-//
-//    Debug.Log("randomX difference = " + (randomX - Mathf.Round(randomX)));
-//
-//    if (Mathf.Abs(randomX - Mathf.Round(randomX)) < 0.25)
-//    {
-//        randomX = Mathf.Round(randomX);
-//    }
-//    else
-//    {
-//        randomX = Mathf.Round(randomX);
-//        randomX += 0.5f;
-//    }
-//
-//    if (blockPrefabs[randomBlock].blockData.width % 2 == 0)
-//    {
-//        randomX -= (randomX % 1);
-//    }
-//
-//    Vector2 minPosition = -blockPrefabs[randomBlock].blockData.maxAllowablePosition;
-//    Vector2 maxPosition = blockPrefabs[randomBlock].blockData.maxAllowablePosition;
-//
-//    minPosition.x *= sizeFactorX;
-//    minPosition.y *= sizeFactorY;
-//
-//    maxPosition.x *= sizeFactorX;
-//    maxPosition.y *= sizeFactorY;
-//
-//    float ySpawn = maxPosition.y;
-//
-//    if (blockPrefabs[randomBlock].blockData.width % 2 != 0 && blockPrefabs[randomBlock].blockData.width != 1)
-//    {
-//        if (Random.Range(0, 2) == 0)
-//            randomX -= 0.5f;
-//        else
-//            randomX += 0.5f;
-//    }
-//
-//
-//    if (minPosition.x > randomX)
-//        randomX = minPosition.x;
-//    else if (maxPosition.x < randomX)
-//        randomX = maxPosition.x;
-//
-//    Vector3 spawnPosition = new Vector3(randomX, ySpawn, 0);
-//
-//    fallingBlock = Instantiate(blockPrefabs[randomBlock], spawnPosition, blockPrefabs[randomBlock].transform.rotation);
-//    activeBlocks.Add(fallingBlock);
-//
-//
-//}

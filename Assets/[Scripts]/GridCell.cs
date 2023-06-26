@@ -5,7 +5,7 @@ using UnityEngine;
 public class GridCell
 {
     public Vector2 position;
-    public bool isFilled;
+    private bool isFilled;
     public DebugGridCell debugCell;
     private Bounds bounds;
 
@@ -27,6 +27,21 @@ public class GridCell
     public void SetColor(Color newColor)
     {
         debugCell.spriteRenderer.color = newColor;
+        if (newColor.r == 1)
+            Debug.Log("cell at position " + position + "  set color to red");
+        else
+            Debug.Log("cell at position " + position + "  set color to green");
+    }
+
+    public void SetFilledState(bool value)
+    {
+        isFilled = value;
+        Debug.Log("cell at position " + position + "  set isFilled to " + value);
+    }
+
+    public bool GetFilledState()
+    {
+        return isFilled;
     }
 
 }

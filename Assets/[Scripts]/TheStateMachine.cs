@@ -26,6 +26,7 @@ public class TheStateMachine : MonoBehaviour
     {
         blockManager = FindObjectOfType<BlockManager>();
         SetState(GameplayState.WaitingForSpawn);
+
     }
 
     // Update is called once per frame

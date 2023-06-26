@@ -58,6 +58,7 @@ public class BlockBehaviour : MonoBehaviour
 
     public void CollisionCheck(MoveType moveType, bool horizontal, float value)
     {
+        Debug.Log("CollisionCheck called");
         // 1-3 Calculate block boundaries, and grid space position of pivot point
         #region PositionAndBoundaries
         //  1. Get current subBlock positions
@@ -67,54 +68,55 @@ public class BlockBehaviour : MonoBehaviour
         }
 
         //  2. Calculate current boundaries of entire block                     Bounds.min.x (-11.5) minus fallingBlock's min.x (always 0 or less) will always be greater than Bounds.min.x
-        currentMin_XY.x = blockManager.bounds.min.x - blockData.min_XY.x;
-        currentMax_XY.x = blockManager.bounds.max.x - blockData.max_XY.x;
-        currentMax_XY.y = blockManager.bounds.max.y - blockData.max_XY.y;
-        currentMin_XY.y = blockManager.bounds.min.y - blockData.min_XY.y;
+        currentMin_XY.x = (int)Mathf.Round((blockManager.bounds.min.x - blockData.min_XY.x));
+        currentMax_XY.x = (int)Mathf.Round((blockManager.bounds.max.x - blockData.max_XY.x));
+        currentMax_XY.y = (int)Mathf.Round((blockManager.bounds.max.y - blockData.max_XY.y));
+        currentMin_XY.y = (int)Mathf.Round((blockManager.bounds.min.y - blockData.min_XY.y));
 
         //  3. Calculate grid-space coordinates of block's pivot point
-        pivotPointGridColumn = Mathf.RoundToInt(transform.position.x + 11.5f);
-        pivotPointGridRow = Mathf.RoundToInt(transform.position.y + 19.5f);
+        pivotPointGridColumn = (int)Mathf.Round(transform.position.x);
+        pivotPointGridRow = (int)Mathf.Round(transform.position.y);
         #endregion
 
-        //  4. Update grid cells filled to true or false
-        #region UpdateGridCellsFilledState
-
-        for (int i = 0; i < occupiedGridCells.Length; i++)
-        {
-            if (occupiedGridCells[i].x < Grid.cells.GetLength(0) && occupiedGridCells[i].y < Grid.cells.GetLength(1))
-            {
-                Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].isFilled = false;
-                Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetColor(Color.green);
-            }
-            else
-            {
-                Debug.Log("Couldn't reset grid cell, an index was out of bounds");
-                Debug.Log("Actual position.x was = " + subBlocks[i].transform.position.x);
-                Debug.Log("Index x was = " + (occupiedGridCells[i].x));
-                Debug.Log("Actual position.y was = " + subBlocks[i].transform.position.y);
-                Debug.Log("Index y was = " + (occupiedGridCells[i].y));
-            }
-            occupiedGridCells[i].x = subBlocks[i].transform.position.x + 11.5f;
-            occupiedGridCells[i].y = subBlocks[i].transform.position.y + 19.5f;
-            if (occupiedGridCells[i].x >= Grid.cells.GetLength(0) - 1)
-            {
-                Debug.Log("Index x: " + occupiedGridCells[i].x + "is invalid");
-            }
-            if (occupiedGridCells[i].y >= Grid.cells.GetLength(1) - 1)
-            {
-                Debug.Log("Index y: " + occupiedGridCells[i].y + "is invalid");
-            }
-
-            if (occupiedGridCells[i].x < Grid.cells.GetLength(0) && occupiedGridCells[i].y < Grid.cells.GetLength(1))
-            {
-                Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].isFilled = true;
-                Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetColor(Color.red); // null error here, because of block moving beyond boundary
-                Debug.Log("falling block occupied grid cells = " + (int)occupiedGridCells[i].x + ", " + (int)occupiedGridCells[i].y);
-            }
-
-        }
-        #endregion
+       ////  4. Update grid cells filled to true or false
+       //#region UpdateGridCellsFilledState
+       //Debug.Log("Grid length x = " + Grid.cells.GetLength(0));
+       //Debug.Log("Grid length y = " + Grid.cells.GetLength(1));
+       //for (int i = 0; i < occupiedGridCells.Length; i++)
+       //{
+       //    if (occupiedGridCells[i].x < Grid.cells.GetLength(0) && occupiedGridCells[i].y < Grid.cells.GetLength(1))
+       //    {
+       //        Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetFilledState(false);
+       //        //Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetColor(Color.green);
+       //    }
+       //    else
+       //    {
+       //        Debug.Log("Couldn't reset grid cell, an index was out of bounds");
+       //        Debug.Log("Actual position.x was = " + subBlocks[i].transform.position.x);
+       //        Debug.Log("Index x was = " + (occupiedGridCells[i].x));
+       //        Debug.Log("Actual position.y was = " + subBlocks[i].transform.position.y);
+       //        Debug.Log("Index y was = " + (occupiedGridCells[i].y));
+       //    }
+       //    occupiedGridCells[i].x = Mathf.Round(subBlocks[i].transform.position.x);
+       //    occupiedGridCells[i].y = Mathf.Round(subBlocks[i].transform.position.y);
+       //    if (occupiedGridCells[i].x >= Grid.cells.GetLength(0) - 1)
+       //    {
+       //        Debug.Log("Index x: " + occupiedGridCells[i].x + "is invalid");
+       //    }
+       //    if (occupiedGridCells[i].y >= Grid.cells.GetLength(1) - 1)
+       //    {
+       //        Debug.Log("Index y: " + occupiedGridCells[i].y + "is invalid");
+       //    }
+       //
+       //    if (occupiedGridCells[i].x < Grid.cells.GetLength(0) && occupiedGridCells[i].y < Grid.cells.GetLength(1))
+       //    {
+       //        Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetFilledState(true);
+       //        //Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetColor(Color.red); // null error here, because of block moving beyond boundary
+       //        Debug.Log("falling block occupied grid cell #" + i + " = " + (int)occupiedGridCells[i].x + ", " + (int)occupiedGridCells[i].y);
+       //    }
+       //
+       //}
+       //#endregion
 
         //  5. Calculate what cells to check for collision with this block
         #region FindPotentialCollisions
@@ -141,25 +143,29 @@ public class BlockBehaviour : MonoBehaviour
             //Iterate through rows from maxBottom to maxTop
             for (int i2 = actualBottomCellToCheck; i2 <= actualTopCellToCheck; i2++)
             {
-                if (Grid.cells[i, i2].isFilled)
+                if (Grid.cells[i, i2].GetFilledState())
                 {
                     filledCells.Add(new Vector2(i, i2));
                 }
             }
         }
 
-        List<int> cellsIndicesToRemove = new List<int>();
+        occupiedAdjacentCells.Clear();
 
-        for (int i = 0; i < filledCells.Count; i++)
+        for ( int i = 0; i < filledCells.Count; i++)
         {
+            bool matchedCell = false;
             for (int i2 = 0; i2 < 5; i2++)
             {
-                if (filledCells[i].x != occupiedGridCells[i2].x && filledCells[i].y != occupiedGridCells[i2].y)
+                if (filledCells[i].x == occupiedGridCells[i2].x && filledCells[i].y == occupiedGridCells[i2].y)
                 {
-                    occupiedAdjacentCells.Add(filledCells[i]);
+                    matchedCell = true;
                 }
             }
+            if (!matchedCell)
+                occupiedAdjacentCells.Add(filledCells[i]);
         }
+
         #endregion
 
         //  6. Check if any filled cells will stop block from moving in it's current direction
@@ -168,7 +174,7 @@ public class BlockBehaviour : MonoBehaviour
         {
             for (int i2 = 0; i2 < 5; i2++)
             {
-                if (occupiedAdjacentCells[i].x == occupiedGridCells[i2].x && occupiedAdjacentCells[i].y == occupiedGridCells[i2].y - 2)
+                if (occupiedAdjacentCells[i].x == occupiedGridCells[i2].x && occupiedAdjacentCells[i].y == occupiedGridCells[i2].y - 1)
                 {
                     stopped = true;
                 }
@@ -243,6 +249,8 @@ public class BlockBehaviour : MonoBehaviour
         }
     }
 
+
+
     public void UpdatePositionData()
     {
        // for (int i = 0; i < 5; i++)
@@ -285,7 +293,7 @@ public class BlockBehaviour : MonoBehaviour
         {
             if (occupiedGridCells[i].x < Grid.cells.GetLength(0) && occupiedGridCells[i].y < Grid.cells.GetLength(1))
             {
-                Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].isFilled = false;
+                Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetFilledState(false);
                 Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetColor(Color.green);
             }
             else
@@ -304,8 +312,8 @@ public class BlockBehaviour : MonoBehaviour
     {
         for (int i = 0; i < occupiedGridCells.Length; i++)
         {
-            occupiedGridCells[i].x = subBlocks[i].transform.position.x + 11.5f;
-            occupiedGridCells[i].y = subBlocks[i].transform.position.y + 19.5f;
+            occupiedGridCells[i].x = subBlocks[i].transform.position.x;
+            occupiedGridCells[i].y = subBlocks[i].transform.position.y;
             if (occupiedGridCells[i].x >= Grid.cells.GetLength(0) - 1)
             {
                 Debug.Log("Index x: " + occupiedGridCells[i].x + "is invalid");
@@ -317,7 +325,7 @@ public class BlockBehaviour : MonoBehaviour
 
             if (occupiedGridCells[i].x < Grid.cells.GetLength(0) && occupiedGridCells[i].y < Grid.cells.GetLength(1))
             {
-                Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].isFilled = true;
+                Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetFilledState(true);
                 Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetColor(Color.red); // null error here, because of block moving beyond boundary
                 Debug.Log("falling block occupied grid cells = " + (int)occupiedGridCells[i].x + ", " + (int)occupiedGridCells[i].y);
             }
@@ -358,15 +366,70 @@ public class BlockBehaviour : MonoBehaviour
             }
         }
         UpdatePositionData();
+        blockManager.StateMachine.SetState(TheStateMachine.GameplayState.UpdatingOtherBlocks);
     }
 
     public void Fall()
     {
+        Debug.Log("Fall called");
         if (!stopped)
         {
             transform.position += Vector3.down;
         }
         UpdatePositionData();
+
+        // 1-3 Calculate block boundaries, and grid space position of pivot point
+        //  1. Get current subBlock positions
+        for (int i = 0; i < 5; i++)
+        {
+            currentSubBlockCoordinates[i] = subBlocks[i].transform.position;
+        }
+
+        //  2. Calculate current boundaries of entire block                     Bounds.min.x (-11.5) minus fallingBlock's min.x (always 0 or less) will always be greater than Bounds.min.x
+        currentMin_XY.x = (int)Mathf.Round((blockManager.bounds.min.x - blockData.min_XY.x));
+        currentMax_XY.x = (int)Mathf.Round((blockManager.bounds.max.x - blockData.max_XY.x));
+        currentMax_XY.y = (int)Mathf.Round((blockManager.bounds.max.y - blockData.max_XY.y));
+        currentMin_XY.y = (int)Mathf.Round((blockManager.bounds.min.y - blockData.min_XY.y));
+
+        //  3. Calculate grid-space coordinates of block's pivot point
+        pivotPointGridColumn = (int)Mathf.Round(transform.position.x);
+        pivotPointGridRow = (int)Mathf.Round(transform.position.y);
+
+        //  4. Update grid cells filled to true or false
+        Debug.Log("Grid length x = " + Grid.cells.GetLength(0));
+        Debug.Log("Grid length y = " + Grid.cells.GetLength(1));
+        for (int i = 0; i < occupiedGridCells.Length; i++)
+        {
+            if (occupiedGridCells[i].x < Grid.cells.GetLength(0) && occupiedGridCells[i].y < Grid.cells.GetLength(1))
+            {
+                Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetFilledState(false);
+                Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetColor(Color.green);
+            }
+        }
+
+        for (int i = 0; i < occupiedGridCells.Length; i++)
+        {
+            occupiedGridCells[i].x = Mathf.Round(subBlocks[i].transform.position.x);
+            occupiedGridCells[i].y = Mathf.Round(subBlocks[i].transform.position.y);
+            if (occupiedGridCells[i].x >= Grid.cells.GetLength(0))
+            {
+                Debug.Log("Index x: " + occupiedGridCells[i].x + "is invalid");
+            }
+            if (occupiedGridCells[i].y >= Grid.cells.GetLength(1))
+            {
+                Debug.Log("Index y: " + occupiedGridCells[i].y + "is invalid");
+            }
+
+            if (occupiedGridCells[i].x < Grid.cells.GetLength(0) && occupiedGridCells[i].y < Grid.cells.GetLength(1))
+            {
+                Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetFilledState(true);
+                Grid.cells[(int)occupiedGridCells[i].x, (int)occupiedGridCells[i].y].SetColor(Color.red); // null error here, because of block moving beyond boundary
+                Debug.Log("falling block occupied grid cell #" + i + " = " + (int)occupiedGridCells[i].x + ", " + (int)occupiedGridCells[i].y);
+            }
+
+        }
+
+        blockManager.StateMachine.SetState(TheStateMachine.GameplayState.UpdatingOtherBlocks);
     }
 
     //public void MoveBackInsideBounds()
@@ -445,6 +508,7 @@ public class BlockBehaviour : MonoBehaviour
 
             //MoveBackInsideBounds();
         }
+        blockManager.StateMachine.SetState(TheStateMachine.GameplayState.UpdatingOtherBlocks);
     }
 
  

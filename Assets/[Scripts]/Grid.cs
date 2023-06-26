@@ -18,7 +18,7 @@ public class Grid : MonoBehaviour
     {
         bounds.width = columnCount;
         bounds.height = rowCount;
-        bounds.center = Vector2.zero;
+        bounds.center = new Vector2(11.5f, 19.5f);
 
         cells = new GridCell[columnCount, rowCount];
         for (int i = 0; i < columnCount; i++)
