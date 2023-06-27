@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
+    public BlockManager blockManager;
     public DebugGridCell debugCell;
     public static GridCell[,] cells;
     [SerializeField]
@@ -11,14 +12,17 @@ public class Grid : MonoBehaviour
     [SerializeField]
     private int rowCount = 40;
 
-    private Rect bounds;
+    public Rect bounds;
 
     // Start is called before the first frame update
     void Start()
     {
+        blockManager = FindObjectOfType<BlockManager>();
         bounds.width = columnCount;
         bounds.height = rowCount;
         bounds.center = new Vector2(11.5f, 19.5f);
+        blockManager.bounds.center = bounds.center;
+
 
         cells = new GridCell[columnCount, rowCount];
         for (int i = 0; i < columnCount; i++)

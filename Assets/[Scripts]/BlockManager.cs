@@ -5,6 +5,8 @@ using UnityEngine;
 public class BlockManager : MonoBehaviour
 {
 
+    public bool waitingToApplyInput = false;
+    public Vector2 storedInput = Vector2.zero;
     public float keyHoldThresholdTime = 1.0f;
     public float fastBlockSpeed = 1.0f;
     private bool keyHeld;
@@ -29,20 +31,22 @@ public class BlockManager : MonoBehaviour
     public Grid theGrid;
 
     private TheStateMachine stateMachine;
-    public TheStateMachine StateMachine { get { return stateMachine; } }
+    public TheStateMachine StateMachine { get { return stateMachine; } set { stateMachine = value; } }
 
     // Start is called before the first frame update
     void Start()
     {
         stateMachine = FindObjectOfType<TheStateMachine>();
         theGrid = FindObjectOfType<Grid>();
+
+        //Why am I subtracting 1?
         bounds.width -= 1.0f;
         bounds.height -= 1.0f;
-        bounds.center = new Vector2(11.5f, 19.5f);
+        //bounds.center = theGrid.bounds.center;
         Debug.Log("Bounds.Min = " + bounds.min);
         Debug.Log("Bound.Max = " + bounds.max);
 
-        SpawnBlock();
+        stateMachine.SetState(TheStateMachine.GameplayState.WaitingForSpawn);
     }
 
     public void UpdateOtherBlocks()
@@ -66,171 +70,157 @@ public class BlockManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Make sure this state is only active if falling block has not stopped
-        if(stateMachine.CurrentState == TheStateMachine.GameplayState.WaitingForTimer)
+        if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D))
         {
-            //A Input
-            //A-1 Keys - Pressed
-            if (Input.GetKeyDown(KeyCode.A) && fallingBlock.canMoveLeft)
-            {
-                keyPressStarted = true;
-                inputX = -1;
-            }
-            else if (Input.GetKeyDown(KeyCode.D) && fallingBlock.canMoveRight)
-            {
-                keyPressStarted = true;
-                inputX = 1;
-            }
-            else if (Input.GetKeyDown(KeyCode.S))
-            {
-                keyPressStarted = true;
-                inputY = -1;
-            }
-            else if (!keyHeld)
-            {
-                inputX = 0;
-                inputY = 0;
-            }
-
-            //B-2 Keys - Released
-            if ((Input.GetKeyUp(KeyCode.A) && !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.S)) || (Input.GetKeyUp(KeyCode.D) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.S))
-                || (Input.GetKeyUp(KeyCode.S) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D)))
-            {
-                Debug.Log("Key up triggered");
-                inputX = 0;
-                inputY = 0;
-                keyPressStarted = false;
-                keyTimer = 0;
-                keyHeld = false;
-
-                //fallingBlock.NewSnapToGrid();  // SnapToGrid();
-            }
-            //B-3 Keys - Switched
-            if (Input.GetKeyUp(KeyCode.A) && Input.GetKey(KeyCode.D))
-            {
-                inputX = 1;
-                inputY = 0;
-            }
-            else if (Input.GetKeyUp(KeyCode.A) && Input.GetKey(KeyCode.S))
-            {
-                inputX = 0;
-                inputY = 1;
-            }
-            if (Input.GetKeyUp(KeyCode.D) && Input.GetKey(KeyCode.A))
-            {
-                inputX = -1;
-                inputY = 0;
-            }
-            else if (Input.GetKeyUp(KeyCode.D) && Input.GetKey(KeyCode.S))
-            {
-                inputX = 0;
-                inputY = -1;
-            }
-            if (Input.GetKeyUp(KeyCode.S) && Input.GetKey(KeyCode.A))
-            {
-                inputY = 0;
-                inputX = -1;
-            }
-            else if (Input.GetKeyUp(KeyCode.S) && Input.GetKey(KeyCode.D))
-            {
-                inputY = 0;
-                inputX = 1;
-            }
-
-            //B-4 Keys - Held 
-            if (keyPressStarted)
-            {
-                keyTimer += Time.deltaTime;
-                if (keyTimer > keyHoldThresholdTime)
-                {
-                    keyHeld = true;
-                    if (Input.GetKey(KeyCode.A) && fallingBlock.canMoveLeft)
-                        inputX = -1;  
-                    else if (Input.GetKey(KeyCode.D) && fallingBlock.canMoveRight)
-                        inputX = 1;
-                    else if (Input.GetKey(KeyCode.S))
-                        inputY = -1;
-
-                    if (!fallingBlock.canMoveRight && inputX > 0)
-                    {
-                        ResetKeys();
-                    }
-                    if (!fallingBlock.canMoveLeft && inputX < 0)
-                    {
-                        ResetKeys();
-                    }
-                }
-            }
-
-            //C-1 Movement - Input movement
-            //if (!fallingBlock.stopped)
-            //{   //If falling block has not stopped, apply input movement.
-
-                if (keyPressStarted && !keyHeld)
-                {
-                    //Debug.Log("Key press movement");
-                    //if (inputX != 0)
-                    //    fallingBlock.CollisionCheck(MoveType.INPUT, true, inputX); //fallingBlock.InputMovement(true, inputX); 
-                    //else if (inputY != 0)
-                    //    fallingBlock.CollisionCheck(MoveType.INPUT, false, inputY); //fallingBlock.InputMovement(false, inputY);
-                }
-            //}
-
-
-
-            //C-3 Movement - Rotation Input
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                fallingBlock.Rotate();
-            }
-
-
-            ////D-1 Timers
-            //if (eigthSecondCounter >= 0.125f)
-            //{
-            //    if (keyHeld)
-            //    {
-            //       // Debug.Log("Key held movement");
-            //       // if (inputX != 0)
-            //       //     fallingBlock.CollisionCheck(MoveType.INPUT, true, inputX);  //fallingBlock.InputMovement(true, inputX);
-            //       // else if (inputY != 0)
-            //       //     fallingBlock.CollisionCheck(MoveType.INPUT, false, inputY); //fallingBlock.InputMovement(false, inputY);
-            //    }
-            //    //CheckForFilledRow();
-            //    //fallingBlock.CollisionCheck();
-            //    eigthSecondCounter = 0.0f;
-            //}
-            //
-            //if (quarterSecondCounter >= 0.25f)
-            //{
-            //
-            //    quarterSecondCounter = 0.0f;
-            //}
-            //if (halfSecondCounter >= 0.5f)
-            //{
-            //    if (inputY >= 0)
-            //        //fallingBlock.CollisionCheck(MoveType.FALL, false, 0.0f);    //fallingBlock.Fall();
-            //
-            //    //fallingBlock.CollisionCheck();
-            //    halfSecondCounter = 0.0f;
-            //}
-            //
-            //if (secondCounter >= 1.00f)// && !fallingBlock.stopped)
-            //{
-            //    elapsedTime += secondCounter;
-            //    secondCounter = 0.0f;
-            //    //fallingBlock.transform.position += Vector3.down;
-            //    //fallingBlock.UpdatePositionData();
-            //}
-
+            keyPressStarted = false;
+            keyHeld = false;
+            inputX = 0;
+        }
+        if (Input.GetKeyUp(KeyCode.S))
+        {
+            keyPressStarted = false;
+            keyHeld = false;
+            inputY = 0;
         }
 
-        //E-1 Spawn Blocks
-        //if (fallingBlock.stopped)
-        //{   // Remove fallingBlock reference, spawn a new Block.
-        //    fallingBlock = null;
-        //    SpawnBlock();
+        if (Input.GetKeyDown(KeyCode.A) && fallingBlock.canMoveLeft)
+        {
+            keyPressStarted = true;
+            inputY = 0;
+            inputX = -1;
+        }
+
+        if (Input.GetKeyDown(KeyCode.D) && fallingBlock.canMoveRight)
+        {
+            keyPressStarted = true;
+            inputY = 0;
+            inputX = 1;
+        }
+        if (Input.GetKeyDown(KeyCode.S) && fallingBlock.canMoveDown)
+        {
+            keyPressStarted = true;
+            inputX = 0;
+            inputY = -1;
+        }
+
+        //B-4 Keys - Held 
+        if (keyPressStarted)
+        {
+            keyTimer += Time.deltaTime;
+            if (keyTimer > keyHoldThresholdTime)
+            {
+                keyHeld = true;
+                if (Input.GetKey(KeyCode.A) && fallingBlock.canMoveLeft)
+                    inputX = -1;
+                else if (Input.GetKey(KeyCode.D) && fallingBlock.canMoveRight)
+                    inputX = 1;
+                else if (Input.GetKey(KeyCode.S))
+                    inputY = -1;
+
+                if (!fallingBlock.canMoveRight && inputX > 0)
+                {
+                    ResetKeys();
+                }
+                if (!fallingBlock.canMoveLeft && inputX < 0)
+                {
+                    ResetKeys();
+                }
+            }
+        }
+
+
+
+        // //B-2 Keys - Released
+        // if ((Input.GetKeyUp(KeyCode.A) && !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.S)) || (Input.GetKeyUp(KeyCode.D) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.S))
+        //     || (Input.GetKeyUp(KeyCode.S) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D)))
+        // {
+        //     Debug.Log("Key up triggered");
+        //     inputX = 0;
+        //     inputY = 0;
+        //     keyPressStarted = false;
+        //     keyTimer = 0;
+        //     keyHeld = false;
+        //
+        //     //fallingBlock.NewSnapToGrid();  // SnapToGrid();
+        // }
+        // //B-3 Keys - Switched
+        // if (Input.GetKeyUp(KeyCode.A) && Input.GetKey(KeyCode.D))
+        // {
+        //     inputX = 1;
+        //     inputY = 0;
+        // }
+        // else if (Input.GetKeyUp(KeyCode.A) && Input.GetKey(KeyCode.S))
+        // {
+        //     inputX = 0;
+        //     inputY = 1;
+        // }
+        // if (Input.GetKeyUp(KeyCode.D) && Input.GetKey(KeyCode.A))
+        // {
+        //     inputX = -1;
+        //     inputY = 0;
+        // }
+        // else if (Input.GetKeyUp(KeyCode.D) && Input.GetKey(KeyCode.S))
+        // {
+        //     inputX = 0;
+        //     inputY = -1;
+        // }
+        // if (Input.GetKeyUp(KeyCode.S) && Input.GetKey(KeyCode.A))
+        // {
+        //     inputY = 0;
+        //     inputX = -1;
+        // }
+        // else if (Input.GetKeyUp(KeyCode.S) && Input.GetKey(KeyCode.D))
+        // {
+        //     inputY = 0;
+        //     inputX = 1;
+        // }
+        //
+        // //B-4 Keys - Held 
+        // if (keyPressStarted)
+        // {
+        //     keyTimer += Time.deltaTime;
+        //     if (keyTimer > keyHoldThresholdTime)
+        //     {
+        //         keyHeld = true;
+        //         if (Input.GetKey(KeyCode.A) && fallingBlock.canMoveLeft)
+        //             inputX = -1;  
+        //         else if (Input.GetKey(KeyCode.D) && fallingBlock.canMoveRight)
+        //             inputX = 1;
+        //         else if (Input.GetKey(KeyCode.S))
+        //             inputY = -1;
+        //
+        //         if (!fallingBlock.canMoveRight && inputX > 0)
+        //         {
+        //             ResetKeys();
+        //         }
+        //         if (!fallingBlock.canMoveLeft && inputX < 0)
+        //         {
+        //             ResetKeys();
+        //         }
+        //     }
+        // }
+
+        if (keyPressStarted && !keyHeld)
+        {
+            //Debug.Log("Key press movement");
+            //if (inputX != 0)
+            //    fallingBlock.CollisionCheck(MoveType.INPUT, true, inputX); //fallingBlock.InputMovement(true, inputX); 
+            //else if (inputY != 0)
+            //    fallingBlock.CollisionCheck(MoveType.INPUT, false, inputY); //fallingBlock.InputMovement(false, inputY);
+        }
+
+        //if (stateMachine.CurrentState != TheStateMachine.GameplayState.WaitingForTimer && (inputX != 0 || inputY != 0))
+        //{
+        //    waitingToApplyInput = true;
+        //    storedInput = new Vector2(inputX, inputY);
         //}
+
+
+        //C-3 Movement - Rotation Input
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            fallingBlock.Rotate(true);
+        }
     }
 
     public void SpawnBlock()
@@ -277,6 +267,8 @@ public class BlockManager : MonoBehaviour
         quarterSecondCounter += Time.deltaTime;
         halfSecondCounter += Time.deltaTime;
         secondCounter += Time.deltaTime;
+        //fallingBlock.CheckBlockAgainstBounds();
+        fallingBlock.UpdateCanMove();
 
         //D-1 Timers
         if (eigthSecondCounter >= 0.125f && !stateChanged)
@@ -288,7 +280,15 @@ public class BlockManager : MonoBehaviour
             }
             eigthSecondCounter = 0.0f;
         }
-
+        if (quarterSecondCounter > 0.25f && !stateChanged)
+        {
+            if (inputX != 0)
+            {
+                quarterSecondCounter = 0;
+                stateMachine.SetState(TheStateMachine.GameplayState.CheckingCollision);
+                stateChanged = true;
+            }
+        }
         if (halfSecondCounter >= 0.5f && !stateChanged)
         {
             halfSecondCounter = 0.0f;
@@ -306,6 +306,7 @@ public class BlockManager : MonoBehaviour
     public void CheckCollision()
     {
         stateMachine.SetState(TheStateMachine.GameplayState.WaitingOnCollisionCheck);
+        Debug.Log("CheckCollision called, keyheld = " + keyHeld);
         if (inputX != 0)
         {
             fallingBlock.CollisionCheck(MoveType.INPUT, true, inputX);
