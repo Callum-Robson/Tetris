@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class PentominoBehaviour : MonoBehaviour
 {
-    public BlockManager blockManager;
+    public PentominoManager pManager;
     public BlockData blockData;
     public SubBlockBehaviour[] subBlocks = new SubBlockBehaviour[5];
 
@@ -34,7 +35,7 @@ public class PentominoBehaviour : MonoBehaviour
 
     private void Start()
     {
-        blockManager = FindObjectOfType<BlockManager>();
+        pManager = FindObjectOfType<PentominoManager>();
         //subBlocks = GetComponentsInChildren<SubBlockBehaviour>();
         //PrefabUtility.ApplyPrefabInstance(this.gameObject, InteractionMode.AutomatedAction);
         currentMin_XY = blockData.min_XY;
@@ -49,21 +50,17 @@ public class PentominoBehaviour : MonoBehaviour
 
     }
 
-
     // Update is called once per frame
     void Update()
     {
-        if (transform.position.y <= currentMin_XY.y && !stopped)
-        {
-            stopped = true;
-            blockManager.ResetKeys();
-        }
-       // else
-         //   CheckBlockAgainstBounds();
+
     }
 
-    public void UpdateCanMove()
+    // Block update process begins
+    // Step 1.
+    public void UpdateCanMove(MoveType moveType, bool horizontal, float value)
     {
+        Debug.Log("UpdateCanMove called");
         // If position.x is greater than bounds.min.x (-11.5) minus fallingBlock's min.x (always 0 or less), there is still room to move left
         if (transform.position.x > currentMin_XY.x)//blockManager.bounds.min.x - currentMin_XY.x)
             canMoveLeft = true;
@@ -78,23 +75,25 @@ public class PentominoBehaviour : MonoBehaviour
         else
             canMoveRight = false;
 
+        CollisionCheck(moveType, horizontal, value);
     }
 
+    // Step 2. 
     public void CollisionCheck(MoveType moveType, bool horizontal, float value)
     {
         Debug.Log("CollisionCheck called");
 
         #region PositionAndBoundaries
 
-        // Set Grid Coordinates
+        //  Set Grid Coordinates
         gridX = (int)Mathf.Round(transform.position.x);
         gridY = (int)Mathf.Round(transform.position.y);
-        // Calculate current boundaries of entire block (right now this only works for unrotated pentominos)
+        //  Calculate current boundaries of entire block (right now this only works for unrotated pentominos)
 
-        currentMin_XY.x = (int)Mathf.Round((blockManager.bounds.min.x - activeMin.x));
-        currentMax_XY.y = (int)Mathf.Round((blockManager.bounds.max.y - activeMax.y));
-        currentMin_XY.y = (int)Mathf.Round((blockManager.bounds.min.y - activeMin.y));
-        currentMax_XY.x = (int)Mathf.Round((blockManager.bounds.max.x - activeMax.x));
+        currentMin_XY.x = (int)Mathf.Round((pManager.bounds.min.x - activeMin.x));
+        currentMax_XY.y = (int)Mathf.Round((pManager.bounds.max.y - activeMax.y));
+        currentMin_XY.y = (int)Mathf.Round((pManager.bounds.min.y - activeMin.y));
+        currentMax_XY.x = (int)Mathf.Round((pManager.bounds.max.x - activeMax.x));
 
         #endregion
 
@@ -114,10 +113,10 @@ public class PentominoBehaviour : MonoBehaviour
         List<Vector2> occupiedAdjacentCells = new List<Vector2>();
         List<Vector2> filledCells = new List<Vector2>();
 
-        //Iterate through columns from maxLeft to maxRight
+        //  Iterate through columns from maxLeft to maxRight
         for (int i = maxLeftCell; i <= maxRightCell; i++)
         {
-            //Iterate through rows from maxBottom to maxTop
+            //  Iterate through rows from maxBottom to maxTop
             for (int i2 = maxBottomCell; i2 <= maxTopCell; i2++)
             {
                 if (Grid.cells[i, i2].GetFilledState())
@@ -142,10 +141,10 @@ public class PentominoBehaviour : MonoBehaviour
             if (!matchedCell)
                 occupiedAdjacentCells.Add(filledCells[i]);
         }
-
+        filledCells.Clear();
         #endregion
 
-        //  5. Check if any filled cells are directly below any subblock
+        //      Check if any filled cells are directly below any subblock
         #region ActuallyCheckCollision
         for (int i = 0; i < occupiedAdjacentCells.Count; i++)
         {
@@ -155,27 +154,69 @@ public class PentominoBehaviour : MonoBehaviour
                 {
                     stopped = true;
                 }
+                if (occupiedAdjacentCells[i].x == subBlocks[i2].transform.position.x -1)
+                {
+                    canMoveLeft = false;
+                }
+                if (occupiedAdjacentCells[i].x == subBlocks[i2].transform.position.x + 1)
+                {
+                    canMoveRight = false;
+                }
             }
         }
         #endregion
 
-        blockManager.StateMachine.SetState(TheStateMachine.GameplayState.UpdatingActiveBlock);
-
-        switch (moveType)
+        //6.    Check if pentomino has reached the bottom of the grid.
+        //      If position.y of pentomino is equal to it's calculated min_XY.y, it's lowest subBlock has reached the bottom cell of the grid.
+        if (transform.position.y <= currentMin_XY.y)
         {
-            case (MoveType.FALL):
-                Fall();
-                break;
-            case (MoveType.INPUT):
-                InputMovement(horizontal, value);
-                break;
-            case (MoveType.ROTATION):
-                Rotate(true);
-                break;
+            stopped = true;
+        }
 
+        ResetDebugGrid(moveType, horizontal, value);
+    }
+
+
+    // Step 3.
+    private void ResetDebugGrid(MoveType type, bool horizontal, float value)
+    {
+        Debug.Log("ResetDebugGrid called");
+        for (int i = 0; i < subBlocks.Length; i++)
+        {
+            int x = Mathf.RoundToInt(subBlocks[i].transform.position.x);
+            int y = Mathf.RoundToInt(subBlocks[i].transform.position.y);
+
+            if (x < Grid.cells.GetLength(0) && y < Grid.cells.GetLength(1))
+            {
+                Grid.cells[x, y].SetFilledState(false);
+                Grid.cells[x, y].SetColor(Color.green);
+                Debug.Log("falling block occupied grid cells = " + x + ", " + y);
+            }
+        }
+        cellsReset = true;
+        if (!stopped)
+        {
+            switch (type)
+            {
+                case MoveType.FALL:
+                    Fall();
+                    break;
+                case MoveType.INPUT:
+                    InputMovement(horizontal, value);
+                    break;
+                case MoveType.ROTATION:
+                    Rotate(true);
+                    break;
+            }
+        }
+        else
+        {
+            UpdateDebugGrid();
         }
     }
 
+    // Step 4.
+    #region Step4
     public void Fall()
     {
         Debug.Log("PentominoBehaviour - Fall");
@@ -193,101 +234,78 @@ public class PentominoBehaviour : MonoBehaviour
         }
     }
 
+    // Step 4.
     public void InputMovement(bool horizontal, float value)
     {
         Debug.Log("PentominoBehaviour - InputMovement");
-        if (cellsReset)
+        if (horizontal)
         {
-            // movement
-
-            UpdateDebugGrid();
+            if (!stopped)
+            {
+                if (value > 0 && canMoveRight)
+                    transform.position += Vector3.right;
+                else if (value < 0 && canMoveLeft)
+                    transform.position += Vector3.left;
+            }
         }
         else
         {
-            ResetDebugGrid(MoveType.INPUT, horizontal, value);
+            if (!stopped)
+            {
+                transform.position += Vector3.down;
+            }
         }
+        UpdateDebugGrid();
     }
 
+    // Step 4.
     public void Rotate(bool clockwise)
     {
-        if (cellsReset)
+        degreesRotated += 90;
+        if (degreesRotated == 360)
+            degreesRotated = 0;
+        Debug.Log("PentominoBehaviour - Rotate");
+        if (clockwise)
         {
-            degreesRotated += 90;
-            if (degreesRotated == 360)
-                degreesRotated = 0;
-            Debug.Log("PentominoBehaviour - Rotate");
-            if (clockwise)
+            switch (degreesRotated)
             {
-                switch (degreesRotated)
-                {
-                    case 0:
-                        activeMin = defaultMin;
-                        activeMax = defaultMax;
-                        break;
-                    case 90:
-                        activeMin.x = defaultMin.y;
-                        activeMin.y = defaultMax.x;
-                        activeMax.x = defaultMax.y;
-                        activeMax.y = defaultMin.x;
-                        break;
-                    case 180:
-                        activeMin.x = defaultMax.x;
-                        activeMin.y = defaultMax.y;
-                        activeMax.x = defaultMin.x;
-                        activeMax.y = defaultMin.y;
-                        break;
-                    case 270:
-                        activeMin.x = defaultMax.y;
-                        activeMin.y = defaultMin.x;
-                        activeMax.x = defaultMin.y;
-                        activeMax.y = defaultMax.x;
-                        break;
-                }
-            }
-            activeMin.x = -Mathf.Abs(activeMin.x);
-            activeMin.y = -Mathf.Abs(activeMin.y);
-            activeMax.x = Mathf.Abs(activeMax.x);
-            activeMax.y = Mathf.Abs(activeMax.y);
-            UpdateDebugGrid();
-        }
-        else
-        {
-            ResetDebugGrid(MoveType.ROTATION, false, 0);
-        }
-    }
-
-    private void ResetDebugGrid(MoveType type, bool horizontal, float value)
-    {
-        for (int i = 0; i < subBlocks.Length; i++)
-        {
-            int x = Mathf.RoundToInt(subBlocks[i].transform.position.x);
-            int y = Mathf.RoundToInt(subBlocks[i].transform.position.y);
-
-            if (x < Grid.cells.GetLength(0) && y < Grid.cells.GetLength(1))
-            {
-                Grid.cells[x, y].SetFilledState(false);
-                Grid.cells[x, y].SetColor(Color.green);
-                Debug.Log("falling block occupied grid cells = " + x + ", " + y);
+                case 0:
+                    activeMin = defaultMin;
+                    activeMax = defaultMax;
+                    break;
+                case 90:
+                    activeMin.x = defaultMin.y;
+                    activeMin.y = defaultMax.x;
+                    activeMax.x = defaultMax.y;
+                    activeMax.y = defaultMin.x;
+                    break;
+                case 180:
+                    activeMin.x = defaultMax.x;
+                    activeMin.y = defaultMax.y;
+                    activeMax.x = defaultMin.x;
+                    activeMax.y = defaultMin.y;
+                    break;
+                case 270:
+                    activeMin.x = defaultMax.y;
+                    activeMin.y = defaultMin.x;
+                    activeMax.x = defaultMin.y;
+                    activeMax.y = defaultMax.x;
+                    break;
             }
         }
-        cellsReset = true;
-        switch(type)
-        {
-            case MoveType.FALL:
-                Fall();
-                break;
-            case MoveType.INPUT:
-                InputMovement(horizontal, value);
-                break;
-            case MoveType.ROTATION:
-                Rotate(true);
-                break;
-        }
+        activeMin.x = -Mathf.Abs(activeMin.x);
+        activeMin.y = -Mathf.Abs(activeMin.y);
+        activeMax.x = Mathf.Abs(activeMax.x);
+        activeMax.y = Mathf.Abs(activeMax.y);
+        transform.Rotate(Vector3.forward * -90);
+        UpdateDebugGrid();
     }
+    #endregion
 
+    // Step 5.
     private void UpdateDebugGrid()
     {
-        cellsReset = false;
+        Debug.Log("UpdateDebugGrid called");
         for (int i = 0; i < subBlocks.Length; i++)
         {
             int x = Mathf.RoundToInt(subBlocks[i].transform.position.x);
@@ -309,7 +327,14 @@ public class PentominoBehaviour : MonoBehaviour
                 Debug.Log("falling block occupied grid cells = " + x + ", " + y);
             }
         }
-        blockManager.StateMachine.SetState(TheStateMachine.GameplayState.UpdatingOtherBlocks);
+        if (!stopped)
+        {
+            pManager.StateMachine.SetState(GameplayStateMachine.States.Timer);
+        }
+        else
+        {
+            pManager.StateMachine.SetState(GameplayStateMachine.States.Spawn);
+        }
     }
 
 

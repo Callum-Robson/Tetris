@@ -10,11 +10,9 @@ public class TheStateMachine : MonoBehaviour
         Start,
         WaitingForSpawn,            // Transitions to WaitingForTimer (Maybe unnecessary)
         WaitingForTimer,            // Transitions to CheckingCollision
-        CheckingCollision,          // Transitions to UpdatingActiveBlock
+        CheckingCollision,          // Transitions to UpdatingOther Blocks
         WaitingOnCollisionCheck,    // Wait until CollisionCheck is done
-        UpdatingActiveBlock,        // Transitions to UpdatingOtherBlocks
-        WaitingOnActiveUpdate,      // Wait until Acitve Block is updated
-        UpdatingOtherBlocks,        // Transitions to WaitingForTimer
+        UpdatingOtherBlocks,        // Transitions to WaitingOnOthersBlocks
         WaitingOnOtherUpdate        // Wait until Other Blocks are updated
     }
 
@@ -51,14 +49,44 @@ public class TheStateMachine : MonoBehaviour
                 break;
             case GameplayState.WaitingOnCollisionCheck:
                 break;
-            case GameplayState.UpdatingActiveBlock:
-                break;
-            case GameplayState.WaitingOnActiveUpdate:
-                break;
             case GameplayState.UpdatingOtherBlocks:
                 blockManager.UpdateOtherBlocks();
                 break;
             case GameplayState.WaitingOnOtherUpdate:
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void NextState()
+    {
+        switch (currentState)
+        {
+            case GameplayState.Start:
+                break;
+            case GameplayState.WaitingForSpawn:
+                currentState = GameplayState.WaitingForTimer;
+                lastStateText.text = "Waiting For Spawn";
+                break;
+            case GameplayState.WaitingForTimer:
+                lastStateText.text = "Waiting For Timer";
+                break;
+            case GameplayState.CheckingCollision:
+                currentState = GameplayState.WaitingOnCollisionCheck;
+                lastStateText.text = "Check Collision";
+                break;
+            case GameplayState.WaitingOnCollisionCheck:
+                currentState = GameplayState.UpdatingOtherBlocks;
+                lastStateText.text = "Waiting on Collision Check";
+                break;
+            case (GameplayState.UpdatingOtherBlocks):
+                currentState = GameplayState.WaitingOnOtherUpdate;
+                lastStateText.text = "Updating Other Blocks";
+                break;
+            case (GameplayState.WaitingOnOtherUpdate):
+                currentState = GameplayState.WaitingForSpawn;
+                lastStateText.text = "Waiting On Other Update";
                 break;
             default:
                 break;
@@ -83,12 +111,6 @@ public class TheStateMachine : MonoBehaviour
                 break;
             case GameplayState.WaitingOnCollisionCheck:
                 lastStateText.text = "Waiting on Collision Check";
-                break;
-            case (GameplayState.UpdatingActiveBlock):
-                lastStateText.text = "Updating Active Block";
-                break;
-            case (GameplayState.WaitingOnActiveUpdate):
-                lastStateText.text = "Waiting On Active Update";
                 break;
             case (GameplayState.UpdatingOtherBlocks):
                 lastStateText.text = "Updating Other Blocks";
@@ -115,12 +137,6 @@ public class TheStateMachine : MonoBehaviour
                 break;
             case GameplayState.WaitingOnCollisionCheck:
                 currentStateText.text = "Waiting on Collision Check";
-                break;
-            case (GameplayState.UpdatingActiveBlock):
-                currentStateText.text = "Updating Active Block";
-                break;
-            case (GameplayState.WaitingOnActiveUpdate):
-                currentStateText.text = "Waiting On Active Update";
                 break;
             case (GameplayState.UpdatingOtherBlocks):
                 currentStateText.text = "Updating Other Blocks";

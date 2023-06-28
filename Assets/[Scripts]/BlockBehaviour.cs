@@ -541,6 +541,7 @@ public class BlockBehaviour : MonoBehaviour
     private int degreesRotated = 0;
 
     private bool cellsReset = false;
+    public bool isActiveBlock;
 
     private void Start()
     {
@@ -563,14 +564,18 @@ public class BlockBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (stopped && isActiveBlock && blockManager.StateMachine.CurrentState != TheStateMachine.GameplayState.UpdatingOtherBlocks)
+        {
+            blockManager.StateMachine.SetState(TheStateMachine.GameplayState.UpdatingOtherBlocks);
+        }
         if (!stopped)
         {
             canMoveDown = true;
         }
         if (transform.position.y <= currentMin_XY.y && !stopped)
         {
-            stopped = true;
-            blockManager.ResetKeys();
+           // stopped = true;
+           // blockManager.ResetKeys();
         }
         // else
         //   CheckBlockAgainstBounds();
@@ -591,7 +596,6 @@ public class BlockBehaviour : MonoBehaviour
             canMoveRight = true;
         else
             canMoveRight = false;
-
     }
 
     public void CollisionCheck(MoveType moveType, bool horizontal, float value)
@@ -657,6 +661,7 @@ public class BlockBehaviour : MonoBehaviour
                 occupiedAdjacentCells.Add(filledCells[i]);
         }
 
+        filledCells.Clear();
         #endregion
 
         //  5. Check if any filled cells are directly below any subblock
@@ -668,12 +673,13 @@ public class BlockBehaviour : MonoBehaviour
                 if (occupiedAdjacentCells[i].x == subBlocks[i2].transform.position.x && occupiedAdjacentCells[i].y == subBlocks[i2].transform.position.y - 1)
                 {
                     stopped = true;
+                    blockManager.ResetKeys();
+                    blockManager.StateMachine.SetState(TheStateMachine.GameplayState.UpdatingOtherBlocks);
                 }
             }
         }
         #endregion
 
-        blockManager.StateMachine.SetState(TheStateMachine.GameplayState.UpdatingActiveBlock);
 
         switch (moveType)
         {
@@ -693,17 +699,26 @@ public class BlockBehaviour : MonoBehaviour
     public void Fall()
     {
         Debug.Log("PentominoBehaviour - Fall");
-        if (cellsReset)
+        if (transform.position.y <= currentMin_XY.y && !stopped)
         {
-            if (!stopped)
-            {
-                transform.position += Vector3.down;
-                UpdateDebugGrid();
-            }
+            stopped = true;
+            blockManager.ResetKeys();
+            blockManager.StateMachine.SetState(TheStateMachine.GameplayState.UpdatingOtherBlocks);
         }
         else
         {
-            ResetDebugGrid(MoveType.FALL, false, 0);
+            if (cellsReset)
+            {
+                if (!stopped)
+                {
+                    transform.position += Vector3.down;
+                    UpdateDebugGrid();
+                }
+            }
+            else
+            {
+                ResetDebugGrid(MoveType.FALL, false, 0);
+            }
         }
     }
 
@@ -711,30 +726,40 @@ public class BlockBehaviour : MonoBehaviour
     {
         Debug.Log("PentominoBehaviour - InputMovement");
         Debug.Log("Horizontal = " + horizontal + " and value = " + value);
-        if (cellsReset)
+        if (transform.position.y <= currentMin_XY.y)
         {
-            // movement
-            if (horizontal)
-            {
-                if (!stopped)
-                {
-                    transform.position += Vector3.right * value;
-
-                }
-            }
-            else
-            {
-                if (!stopped)
-                {
-                    transform.position += Vector3.up * value;
-                }
-            }
-            UpdateDebugGrid();
+            stopped = true;
+            blockManager.ResetKeys();
+            blockManager.StateMachine.SetState(TheStateMachine.GameplayState.UpdatingOtherBlocks);
         }
         else
         {
-            ResetDebugGrid(MoveType.INPUT, horizontal, value);
+            if (cellsReset)
+            {
+                // movement
+                if (horizontal)
+                {
+                    if (!stopped)
+                    {
+                        transform.position += Vector3.right * value;
+
+                    }
+                }
+                else
+                {
+                    if (!stopped)
+                    {
+                        transform.position += Vector3.up * value;
+                    }
+                }
+                UpdateDebugGrid();
+            }
+            else
+            {
+                ResetDebugGrid(MoveType.INPUT, horizontal, value);
+            }
         }
+       
     }
 
     public void Rotate(bool clockwise)

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
+    public bool usingBlockManager = false;
+    public PentominoManager pManager;
     public BlockManager blockManager;
     public DebugGridCell debugCell;
     public static GridCell[,] cells;
@@ -17,11 +19,24 @@ public class Grid : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        blockManager = FindObjectOfType<BlockManager>();
         bounds.width = columnCount;
         bounds.height = rowCount;
         bounds.center = new Vector2(11.5f, 19.5f);
-        blockManager.bounds.center = bounds.center;
+
+        if (usingBlockManager)
+        {
+            blockManager = FindObjectOfType<BlockManager>();
+            blockManager.bounds.center = bounds.center;
+        }
+
+        else
+        {
+            pManager = FindObjectOfType<PentominoManager>();
+            pManager.bounds.center = bounds.center;
+        }
+
+
+
 
 
         cells = new GridCell[columnCount, rowCount];

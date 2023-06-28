@@ -39,7 +39,7 @@ public class BlockManager : MonoBehaviour
         stateMachine = FindObjectOfType<TheStateMachine>();
         theGrid = FindObjectOfType<Grid>();
 
-        //Why am I subtracting 1?
+        //Subtracting 1 to account for starting from 0 no 1
         bounds.width -= 1.0f;
         bounds.height -= 1.0f;
         //bounds.center = theGrid.bounds.center;
@@ -306,6 +306,7 @@ public class BlockManager : MonoBehaviour
     public void CheckCollision()
     {
         stateMachine.SetState(TheStateMachine.GameplayState.WaitingOnCollisionCheck);
+        fallingBlock.UpdateCanMove();
         Debug.Log("CheckCollision called, keyheld = " + keyHeld);
         if (inputX != 0)
         {
