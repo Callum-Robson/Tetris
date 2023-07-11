@@ -173,6 +173,7 @@ public class PentominoBehaviour : MonoBehaviour
             stopped = true;
         }
 
+        // Next Step
         ResetDebugGrid(moveType, horizontal, value);
     }
 
@@ -194,6 +195,7 @@ public class PentominoBehaviour : MonoBehaviour
             }
         }
         cellsReset = true;
+        //Next Step
         if (!stopped)
         {
             switch (type)
