@@ -5,7 +5,7 @@ using UnityEngine;
 public class Grid : MonoBehaviour
 {
     public bool usingBlockManager = false;
-    public PentominoManager pManager;
+    public NewManager pManager;
     public BlockManager blockManager;
     public DebugGridCell debugCell;
     public static GridCell[,] cells;
@@ -31,7 +31,7 @@ public class Grid : MonoBehaviour
 
         else
         {
-            pManager = FindObjectOfType<PentominoManager>();
+            pManager = FindObjectOfType<NewManager>();
             pManager.bounds.center = bounds.center;
         }
 

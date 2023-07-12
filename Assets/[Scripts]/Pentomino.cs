@@ -1,16 +1,34 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class Pentomino : MonoBehaviour
 {
     public SquareBehaviour[] squares;
+    public BlockData blockData;
     private bool stopped = false;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+#region
+        //  For quickly modifying prefabs   //
+        //string letter = gameObject.name[gameObject.name.Length-1].ToString();
+        //Debug.Log("Index = " + (gameObject.name.Length - 1));
+        //Debug.Log(letter);
+        //blockData = Resources.Load<BlockData>("BlockData/" + letter + " Block");
+        //SubBlockBehaviour[] subBlocks = GetComponentsInChildren<SubBlockBehaviour>();
+        //foreach (SubBlockBehaviour block in subBlocks)
+        //{
+        //    block.gameObject.AddComponent<SquareBehaviour>();
+        //    Destroy(block.gameObject.GetComponent<BoxCollider>());
+        //    Destroy(block);
+        //}
+        //squares = GetComponentsInChildren<SquareBehaviour>();
+#endregion
+
+
     }
 
     // Checks if the destination space for each square is empty, if any one is found to be filled, stop checking and set stopped to true;

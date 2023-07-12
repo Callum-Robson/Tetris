@@ -49,7 +49,7 @@ public class PentominoManager : MonoBehaviour
         Debug.Log("Bounds.Min = " + bounds.min);
         Debug.Log("Bound.Max = " + bounds.max);
 
-        stateMachine.SetState(GameplayStateMachine.States.Spawn);
+        //stateMachine.SetState(GameplayStateMachine.States.Spawn);
     }
 
     // Update is called once per frame
@@ -97,7 +97,7 @@ public class PentominoManager : MonoBehaviour
             activePentomino = Instantiate(pentominoPrefabs[randomBlock], spawnPosition, pentominoPrefabs[randomBlock].transform.rotation);
 
             //4. 
-            stateMachine.NextState();
+            //stateMachine.NextState();
         }
         spawnInProgress = false;
     }
@@ -116,7 +116,7 @@ public class PentominoManager : MonoBehaviour
             if (inputX != 0 || inputY != 0 || rotationTriggered)
             {
                 stateChanged = true;
-                stateMachine.SetState(GameplayStateMachine.States.CollisionCheck);
+                //stateMachine.SetState(GameplayStateMachine.States.CollisionCheck);
             }
         }
         if (fallTimer >= 0.5f && !stateChanged)
@@ -125,13 +125,13 @@ public class PentominoManager : MonoBehaviour
             fallTimer = 0;
             stateChanged = true;
             fallTriggered = true;
-            stateMachine.SetState(GameplayStateMachine.States.CollisionCheck);
+            //stateMachine.SetState(GameplayStateMachine.States.CollisionCheck);
         }
     }
 
     public void CheckForCollision()
     {
-        stateMachine.NextState();
+        //stateMachine.NextState();
         if (fallTriggered)
         {
             activePentomino.UpdateCanMove(MoveType.FALL, false, 0);

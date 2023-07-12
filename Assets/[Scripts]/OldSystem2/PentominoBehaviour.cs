@@ -331,11 +331,11 @@ public class PentominoBehaviour : MonoBehaviour
         }
         if (!stopped)
         {
-            pManager.StateMachine.SetState(GameplayStateMachine.States.Timer);
+           // pManager.StateMachine.SetState(GameplayStateMachine.States.Timer);
         }
         else
         {
-            pManager.StateMachine.SetState(GameplayStateMachine.States.Spawn);
+            //pManager.StateMachine.SetState(GameplayStateMachine.States.Spawn);
         }
     }
 
