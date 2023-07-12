@@ -49,7 +49,11 @@ public class Pentomino : MonoBehaviour
             if (square.CheckCollision(direction))
             {
                 collided = true;
-                stopped = true;
+                if (direction.y != 0)
+                {
+                    stopped = true;
+                    NewManager.spawnRequired = true;
+                }
                 break;
             }
         }
@@ -62,6 +66,8 @@ public class Pentomino : MonoBehaviour
         {
             square.SetCellFilledStatus(true);
         }
+        
+        GameplayStateMachine.NextState();
     }
 
     public void AttemptRotation(bool clockwise)

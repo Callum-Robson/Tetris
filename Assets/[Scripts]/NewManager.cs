@@ -7,12 +7,14 @@ public class NewManager : MonoBehaviour
     [SerializeField]
     private Pentomino[] pentominoPrefabs = new Pentomino[12];
     private Pentomino activePentomino;
+    private List<Pentomino> otherPentominos = new List<Pentomino>();
 
     public Grid theGrid;
     private GameplayStateMachine stateMachine;
 
     public Rect bounds;
     public static bool spawnInProgress = false;
+    public static bool spawnRequired = true;
 
 
     // Start is called before the first frame update
@@ -33,6 +35,12 @@ public class NewManager : MonoBehaviour
         if (!spawnInProgress)
         {
             spawnInProgress = true;
+            spawnRequired = false;
+
+            if (activePentomino != null)
+            {
+                otherPentominos.Add(activePentomino);
+            }
 
             //1.    Pick random index for random Pentomino
             int randomBlock = Random.Range(0, 12);

@@ -14,11 +14,29 @@ public class SquareBehaviour : MonoBehaviour
     public void UpdateGridPosition()
     {
         gridPosition = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+        
     }
 
-    public bool CheckCollision(Vector2Int targetPosition)
+    public bool CheckCollision(Vector2Int direction)
     {
-        if (Grid.cells[targetPosition.x, targetPosition.y].GetFilledState())
+        gridPosition = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+        if (gridPosition.y < 1)
+            return true;
+        if (direction.x != 0)
+        {
+            if (gridPosition.x > 22)
+            {
+                return true;
+                // at maximum right position
+            }
+            else if (gridPosition.x < 1)
+            {
+                return true;
+                // at maximum left position
+            }
+        }
+
+        if (Grid.cells[gridPosition.x + direction.x, gridPosition.y + direction.y].GetFilledState())
         {
             return true;
         }
