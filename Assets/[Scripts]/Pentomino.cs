@@ -12,7 +12,7 @@ public class Pentomino : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-#region
+        #region
         //  For quickly modifying prefabs   //
         //string letter = gameObject.name[gameObject.name.Length-1].ToString();
         //Debug.Log("Index = " + (gameObject.name.Length - 1));
@@ -26,8 +26,7 @@ public class Pentomino : MonoBehaviour
         //    Destroy(block);
         //}
         //squares = GetComponentsInChildren<SquareBehaviour>();
-#endregion
-
+        #endregion
 
     }
 
@@ -52,6 +51,7 @@ public class Pentomino : MonoBehaviour
                 if (direction.y != 0)
                 {
                     stopped = true;
+                    Stop();
                     NewManager.spawnRequired = true;
                 }
                 break;
@@ -94,5 +94,12 @@ public class Pentomino : MonoBehaviour
         }
     }
 
+    private void Stop()
+    {
+        foreach (SquareBehaviour square in squares)
+        {
+            square.Unhighlight();
+        }
+    }
     //TODO: Create a function to check each row occupied by a stopped pentomino, to see if all cells are filled, then clear the row.
 }

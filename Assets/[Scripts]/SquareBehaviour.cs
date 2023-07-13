@@ -5,9 +5,13 @@ using UnityEngine;
 public class SquareBehaviour : MonoBehaviour
 {
     public Vector2Int gridPosition = new Vector2Int();
+    private MPB_Manager mpbManager;
 
     private void Start()
     {
+        gameObject.AddComponent<MPB_Manager>();
+        mpbManager = GetComponent<MPB_Manager>();
+        mpbManager.ActivateHighlight();
         UpdateGridPosition();
     }
 
@@ -47,5 +51,10 @@ public class SquareBehaviour : MonoBehaviour
     public void SetCellFilledStatus(bool value)
     {
         Grid.cells[gridPosition.x, gridPosition.y].SetFilledState(value);
+    }
+
+    public void Unhighlight()
+    {
+        mpbManager.DeactivateHighlight();
     }
 }
