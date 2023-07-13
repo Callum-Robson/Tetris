@@ -7,6 +7,7 @@ public enum InputType
     none,
     moveX,
     moveY,
+    fall,
     rotate
 }
 

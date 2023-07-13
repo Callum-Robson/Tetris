@@ -28,12 +28,12 @@ public class SquareBehaviour : MonoBehaviour
             return true;
         if (direction.x != 0)
         {
-            if (gridPosition.x > 22)
+            if (gridPosition.x + direction.x > 23)
             {
                 return true;
                 // at maximum right position
             }
-            else if (gridPosition.x < 1)
+            else if (gridPosition.x + direction.x < 0)
             {
                 return true;
                 // at maximum left position
