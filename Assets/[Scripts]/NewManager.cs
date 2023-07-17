@@ -91,4 +91,55 @@ public class NewManager : MonoBehaviour
             activePentomino.AttemptRotation(true);
         }
     }
+
+
+    public void CheckForFilledRow()
+    {
+        bool lineFilled = false;
+        bool valuesSet = false;
+        int highestSquare = 0;
+        int lowestSquare = 0;
+        List<int> filledRows = new List<int>();
+
+        for(int i = 0; i < 5; i++)
+        {
+            if (!valuesSet)
+            {
+                highestSquare = activePentomino.squares[i].gridPosition.y;
+                lowestSquare = activePentomino.squares[i].gridPosition.y;
+                valuesSet = true;
+            }
+            else
+            {
+                if (activePentomino.squares[i].gridPosition.y < lowestSquare)
+                    lowestSquare = activePentomino.squares[i].gridPosition.y;
+
+                if (activePentomino.squares[i].gridPosition.y > highestSquare)
+                    highestSquare = activePentomino.squares[i].gridPosition.y;
+            }
+        }
+
+        for (int i = lowestSquare; i < highestSquare; i++)
+        {
+            int filledCells = 0;
+            for (int i2 = 0; i2 < Grid.cells.GetLength(0); i2++)
+            {
+                if (!Grid.cells[i2,i].GetFilledState())
+                {
+                    break;
+                }
+                else
+                {
+                    filledCells++;
+                }
+            }
+            if (filledCells == Grid.cells.GetLength(0))
+            {
+                filledRows.Add(i);
+                Debug.Log("Row #" + i + " filled");
+            }
+        }
+
+        GameplayStateMachine.NextState();
+    }
 }

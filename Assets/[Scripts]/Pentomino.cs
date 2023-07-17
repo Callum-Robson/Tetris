@@ -5,6 +5,7 @@ using UnityEditor;
 
 public class Pentomino : MonoBehaviour
 {
+    private NewManager newManager;
     public SquareBehaviour[] squares;
     public BlockData blockData;
     private bool stopped = false;
@@ -29,6 +30,7 @@ public class Pentomino : MonoBehaviour
         //squares = GetComponentsInChildren<SquareBehaviour>();
         #endregion
 
+        newManager = FindObjectOfType<NewManager>();
     }
 
     // Checks if the destination space for each square is empty, if any one is found to be filled, stop checking and set stopped to true;
@@ -105,8 +107,8 @@ public class Pentomino : MonoBehaviour
             }
         }
 
-        
-        GameplayStateMachine.NextState();
+        if (!stopped)
+            GameplayStateMachine.NextState();
     }
 
     public void AttemptRotation(bool clockwise)
@@ -144,7 +146,8 @@ public class Pentomino : MonoBehaviour
             square.UpdateGridPosition();
             square.SetCellFilledStatus(false);
         }
-        GameplayStateMachine.NextState();
+        if (!stopped)
+            GameplayStateMachine.NextState();
     }
 
     private void Stop()
@@ -157,6 +160,7 @@ public class Pentomino : MonoBehaviour
         {
             square.Unhighlight();
         }
+        newManager.CheckForFilledRow();
     }
     //TODO: Create a function to check each row occupied by a stopped pentomino, to see if all cells are filled, then clear the row.
 }
