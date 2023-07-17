@@ -148,6 +148,24 @@ public class NewManager : MonoBehaviour
             }
         }
 
+        if (filledRows.Count > 0)
+            DropAfterClear();
+        else
+            GameplayStateMachine.NextState();
+    }
+
+    private void DropAfterClear()
+    {
+        for (int i = 0; i < Grid.cells.GetLength(0); i++)
+        {
+            for (int i2 = 0; i2 < Grid.cells.GetLength(1); i2++)
+            {
+                if (Grid.cells[i,i2].GetFilledState())
+                {
+                    Grid.cells[i, i2].square.FallAfterLineCleared();
+                }
+            }
+        }
 
         GameplayStateMachine.NextState();
     }

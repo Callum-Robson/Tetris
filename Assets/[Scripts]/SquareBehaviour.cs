@@ -93,4 +93,12 @@ public class SquareBehaviour : MonoBehaviour
     {
         mpbManager.DeactivateHighlight();
     }
+
+    public void FallAfterLineCleared()
+    {
+        SetCellFilledStatus(false);
+        transform.position += Vector3.down;
+        UpdateGridPosition();
+        SetCellFilledStatus(true);
+    }
 }
