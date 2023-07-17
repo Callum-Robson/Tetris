@@ -8,6 +8,7 @@ public class GridCell
     private bool isFilled;
     public DebugGridCell debugCell;
     private Bounds bounds;
+    public SquareBehaviour square;
 
     public GridCell(float x, float y)
     {

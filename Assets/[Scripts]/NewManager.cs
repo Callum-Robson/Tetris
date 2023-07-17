@@ -140,6 +140,15 @@ public class NewManager : MonoBehaviour
             }
         }
 
+        for (int i = 0; i < filledRows.Count; i++)
+        {
+            for (int i2 = 0; i2 < Grid.cells.GetLength(0); i2++)
+            {
+                Destroy(Grid.cells[i2, filledRows[i]].square.gameObject);
+            }
+        }
+
+
         GameplayStateMachine.NextState();
     }
 }

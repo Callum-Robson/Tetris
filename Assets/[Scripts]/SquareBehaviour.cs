@@ -83,6 +83,12 @@ public class SquareBehaviour : MonoBehaviour
         }
     }
 
+    public void AssignToCell()
+    {
+        if (gridPosition.x < Grid.cells.GetLength(0) && gridPosition.y < Grid.cells.GetLength(1))
+            Grid.cells[gridPosition.x, gridPosition.y].square = this;
+    }
+
     public void Unhighlight()
     {
         mpbManager.DeactivateHighlight();

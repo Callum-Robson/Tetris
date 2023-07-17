@@ -156,6 +156,7 @@ public class Pentomino : MonoBehaviour
         {
             square.UpdateGridPosition();
             square.SetCellFilledStatus(true);
+            square.AssignToCell();
         }
         if (rotated)
         {
