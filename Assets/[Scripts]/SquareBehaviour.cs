@@ -40,6 +40,12 @@ public class SquareBehaviour : MonoBehaviour
             }
         }
 
+        if (gridPosition.x >= Grid.cells.GetLength(0) || gridPosition.y >= Grid.cells.GetLength(1))
+        {
+            Debug.Log("Grid position invalid");
+            return true;
+        }
+
         if (Grid.cells[gridPosition.x + direction.x, gridPosition.y + direction.y].GetFilledState())
         {
             return true;
@@ -51,7 +57,12 @@ public class SquareBehaviour : MonoBehaviour
     public bool CheckFallCollision(Vector2Int direction)
     {
         gridPosition = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
-        if (gridPosition.y < 1)
+        if (gridPosition.x >= Grid.cells.GetLength(0) || gridPosition.y >= Grid.cells.GetLength(1))
+        {
+            Debug.Log("Grid position invalid");
+            return true;
+        }
+            if (gridPosition.y < 1)
             return true;
         else if (Grid.cells[gridPosition.x, gridPosition.y + direction.y].GetFilledState())
         {
@@ -64,7 +75,12 @@ public class SquareBehaviour : MonoBehaviour
 
     public void SetCellFilledStatus(bool value)
     {
-        Grid.cells[gridPosition.x, gridPosition.y].SetFilledState(value);
+        if (gridPosition.x < Grid.cells.GetLength(0) && gridPosition.y < Grid.cells.GetLength(1))
+            Grid.cells[gridPosition.x, gridPosition.y].SetFilledState(value);
+        else
+        {
+            Debug.Log("GridPosition invalid");
+        }
     }
 
     public void Unhighlight()

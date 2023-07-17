@@ -73,7 +73,7 @@ public class GameTimer : MonoBehaviour
                 GameplayStateMachine.NextState();
                 //GameplayStateMachine.SetState(GameplayStateMachine.States.CollisionCheck);
             }
-            else if (tickTimer >= 0.1f && !stateChanged)
+            if (tickTimer >= 0.1f && !stateChanged)
             {
                 tickTimer = 0;
                 if (InputManager.inputX != 0 || InputManager.inputY != 0 || InputManager.rotationTriggered)

@@ -144,7 +144,7 @@ public class Pentomino : MonoBehaviour
         foreach (SquareBehaviour square in squares)
         {
             square.UpdateGridPosition();
-            square.SetCellFilledStatus(false);
+            square.SetCellFilledStatus(true);
         }
         if (!stopped)
             GameplayStateMachine.NextState();
@@ -152,6 +152,11 @@ public class Pentomino : MonoBehaviour
 
     private void Stop()
     {
+        foreach (SquareBehaviour square in squares)
+        {
+            square.UpdateGridPosition();
+            square.SetCellFilledStatus(true);
+        }
         if (rotated)
         {
             Debug.Log("Rotated pentomino stopeed");
