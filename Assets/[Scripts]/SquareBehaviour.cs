@@ -17,13 +17,13 @@ public class SquareBehaviour : MonoBehaviour
 
     public void UpdateGridPosition()
     {
-        gridPosition = new Vector2Int((int)transform.position.x, (int)transform.position.y);
-        
+        gridPosition = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
+
     }
 
     public bool CheckCollision(Vector2Int direction)
     {
-        gridPosition = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+        gridPosition = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
         if (gridPosition.y < 1)
             return true;
         if (direction.x != 0)
@@ -46,6 +46,20 @@ public class SquareBehaviour : MonoBehaviour
         }
         else
             return false;
+    }
+
+    public bool CheckFallCollision(Vector2Int direction)
+    {
+        gridPosition = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
+        if (gridPosition.y < 1)
+            return true;
+        else if (Grid.cells[gridPosition.x, gridPosition.y + direction.y].GetFilledState())
+        {
+            return true;
+        }
+        else
+            return false;
+
     }
 
     public void SetCellFilledStatus(bool value)

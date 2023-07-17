@@ -25,7 +25,7 @@ public class InputManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameplayStateMachine.CurrentState == GameplayStateMachine.States.Timer)
+        if (GameplayStateMachine.CurrentState == GameplayStateMachine.States.Timer && fallTriggered == false && rotationTriggered == false)
         {
             inputX = (int)Input.GetAxisRaw("Horizontal");
             if (inputX != 0)
@@ -46,7 +46,7 @@ public class InputManager : MonoBehaviour
             }
 
 
-            if (inputX == 0 && inputY == 0 && fallTriggered == false)
+            if (inputX == 0 && inputY == 0)// && fallTriggered == false)
             {
                 inputType = InputType.none;
             }

@@ -36,6 +36,10 @@ public class GridCell
     public void SetFilledState(bool value)
     {
         isFilled = value;
+        if (isFilled)
+            SetColor(Color.red);
+        else
+            SetColor(Color.green);
         Debug.Log("cell at position " + position + "  set isFilled to " + value);
     }
 

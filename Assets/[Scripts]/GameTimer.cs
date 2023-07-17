@@ -7,6 +7,7 @@ public class GameTimer : MonoBehaviour
     private static float fallTimer;
     private static float tickTimer;
     private NewManager pManager;
+    public bool fallTriggered = false;
 
     private void Start()
     {
@@ -22,7 +23,18 @@ public class GameTimer : MonoBehaviour
             tickTimer += Time.deltaTime;
             fallTimer += Time.deltaTime;
 
-            if (tickTimer >= 0.1f && !stateChanged)
+            if (fallTimer >= 0.5f && !stateChanged)
+            {
+                fallTimer = 0;
+                stateChanged = true;
+                InputManager.fallTriggered = true;
+                InputManager.inputType = InputType.fall;
+                // Move to wait state
+                pManager.CheckCollision();
+                GameplayStateMachine.NextState();
+                //GameplayStateMachine.SetState(GameplayStateMachine.States.CollisionCheck);
+            }
+            else if (tickTimer >= 0.1f && !stateChanged)
             {
                 tickTimer = 0;
                 if (InputManager.inputX != 0 || InputManager.inputY != 0 || InputManager.rotationTriggered)
@@ -35,17 +47,7 @@ public class GameTimer : MonoBehaviour
                     //GameplayStateMachine.SetState(GameplayStateMachine.States.CollisionCheck);
                 }
             }
-            if (fallTimer >= 0.5f && !stateChanged)
-            {
-                fallTimer = 0;
-                stateChanged = true;
-                InputManager.fallTriggered = true;
 
-                // Move to wait state
-                pManager.CheckCollision();
-                GameplayStateMachine.NextState();
-                //GameplayStateMachine.SetState(GameplayStateMachine.States.CollisionCheck);
-            }
         }
         yield return null;
     }
@@ -59,30 +61,60 @@ public class GameTimer : MonoBehaviour
             tickTimer += Time.deltaTime;
             fallTimer += Time.deltaTime;
 
-            if (tickTimer >= 0.1f && !stateChanged)
+
+            if (fallTimer >= 0.5f && !stateChanged)
+            {
+                fallTimer = 0;
+                stateChanged = true;
+                InputManager.fallTriggered = true;
+                InputManager.inputType = InputType.fall;
+                // Move to wait state
+                pManager.CheckCollision();
+                GameplayStateMachine.NextState();
+                //GameplayStateMachine.SetState(GameplayStateMachine.States.CollisionCheck);
+            }
+            else if (tickTimer >= 0.1f && !stateChanged)
             {
                 tickTimer = 0;
                 if (InputManager.inputX != 0 || InputManager.inputY != 0 || InputManager.rotationTriggered)
                 {
                     stateChanged = true;
-
+                    if (InputManager.rotationTriggered)
+                    {
+                        InputManager.inputType = InputType.rotate;
+                        InputManager.rotationTriggered = false;
+                    }
                     // Move to wait state
                     pManager.CheckCollision();
                     GameplayStateMachine.NextState();
                     //GameplayStateMachine.SetState(GameplayStateMachine.States.CollisionCheck);
                 }
             }
-            if (fallTimer >= 0.5f && !stateChanged)
-            {
-                fallTimer = 0;
-                stateChanged = true;
-                InputManager.fallTriggered = true;
 
-                // Move to wait state
-                pManager.CheckCollision();
-                GameplayStateMachine.NextState();
-                //GameplayStateMachine.SetState(GameplayStateMachine.States.CollisionCheck);
-            }
+            //if (tickTimer >= 0.1f && !stateChanged)
+            //{
+            //    tickTimer = 0;
+            //    if (InputManager.inputX != 0 || InputManager.inputY != 0 || InputManager.rotationTriggered)
+            //    {
+            //        stateChanged = true;
+            //
+            //        // Move to wait state
+            //        pManager.CheckCollision();
+            //        GameplayStateMachine.NextState();
+            //        //GameplayStateMachine.SetState(GameplayStateMachine.States.CollisionCheck);
+            //    }
+            //}
+            //if (fallTimer >= 0.5f && !stateChanged)
+            //{
+            //    fallTimer = 0;
+            //    stateChanged = true;
+            //    InputManager.fallTriggered = true;
+            //
+            //    // Move to wait state
+            //    pManager.CheckCollision();
+            //    GameplayStateMachine.NextState();
+            //    //GameplayStateMachine.SetState(GameplayStateMachine.States.CollisionCheck);
+            //}
         }
         else if (NewManager.spawnRequired)
         {

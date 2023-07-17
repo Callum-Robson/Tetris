@@ -8,6 +8,7 @@ public class Pentomino : MonoBehaviour
     public SquareBehaviour[] squares;
     public BlockData blockData;
     private bool stopped = false;
+    private bool rotated = false;
 
     // Start is called before the first frame update
     void Start()
@@ -43,35 +44,77 @@ public class Pentomino : MonoBehaviour
             square.SetCellFilledStatus(false);
         }
 
-        foreach (SquareBehaviour square in squares)
+        if (InputManager.inputType != InputType.fall)
         {
-            if (square.CheckCollision(direction))
+            foreach (SquareBehaviour square in squares)
             {
-                collided = true;
-                if (direction.y != 0)
+                if (square.CheckCollision(direction))
                 {
-                    stopped = true;
-                    Stop();
-                    NewManager.spawnRequired = true;
+                    collided = true;
+                    if (direction.y != 0)
+                    {
+                        stopped = true;
+                        if (rotated)
+                        {
+                            Debug.Log("Rotated Pentomino Stopped");
+                        }
+                        Stop();
+                        NewManager.spawnRequired = true;
+                    }
+                    break;
                 }
-                break;
+            }
+            if (collided == false)
+            {
+                transform.position += new Vector3(direction.x, direction.y);
+            }
+
+            foreach (SquareBehaviour square in squares)
+            {
+                square.UpdateGridPosition();
+                square.SetCellFilledStatus(true);
             }
         }
-        if (collided == false)
+        else
         {
-            transform.position += new Vector3(direction.x, direction.y);
+            foreach (SquareBehaviour square in squares)
+            {
+                if (square.CheckFallCollision(Vector2Int.down))
+                {
+                    collided = true;
+
+                    stopped = true;
+                    if (rotated)
+                    {
+                        Debug.Log("Rotated Pentomino Stopped");
+                    }
+                    Stop();
+                    NewManager.spawnRequired = true;
+                    break;
+                }
+            }
+            if (collided == false)
+            {
+                transform.position += new Vector3(0, -1);
+            }
+
+            foreach (SquareBehaviour square in squares)
+            {
+                square.UpdateGridPosition();
+                square.SetCellFilledStatus(true);
+            }
         }
 
-        foreach (SquareBehaviour square in squares)
-        {
-            square.SetCellFilledStatus(true);
-        }
         
         GameplayStateMachine.NextState();
     }
 
     public void AttemptRotation(bool clockwise)
     {
+        foreach (SquareBehaviour square in squares)
+        {
+            square.SetCellFilledStatus(false);
+        }
         float rotationAmount = 0;
 
         if (clockwise)
@@ -82,20 +125,34 @@ public class Pentomino : MonoBehaviour
         //Rotate the pentomino
         transform.Rotate(0, 0, rotationAmount);
 
+        rotated = true;
+
         //Check if any of the new positions of eac
         foreach (SquareBehaviour square in squares)
         {
-            bool collision = square.CheckCollision(new Vector2Int((int)square.transform.position.x, (int)square.transform.position.y));
+            bool collision = square.CheckCollision(Vector2Int.zero);//new Vector2Int((int)square.transform.position.x, (int)square.transform.position.y));
             if (collision)
             {
+                rotated = false;
                 transform.Rotate(0, 0, -rotationAmount);
                 break;
             }
         }
+
+        foreach (SquareBehaviour square in squares)
+        {
+            square.UpdateGridPosition();
+            square.SetCellFilledStatus(false);
+        }
+        GameplayStateMachine.NextState();
     }
 
     private void Stop()
     {
+        if (rotated)
+        {
+            Debug.Log("Rotated pentomino stopeed");
+        }
         foreach (SquareBehaviour square in squares)
         {
             square.Unhighlight();

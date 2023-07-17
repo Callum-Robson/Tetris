@@ -74,7 +74,7 @@ public class NewManager : MonoBehaviour
 
     public void CheckCollision()
     {
-        if (InputManager.inputType == InputType.none)
+        if (InputManager.inputType == InputType.fall)
         {
             activePentomino.AttemptMove(Vector2Int.down);
         }
@@ -85,6 +85,10 @@ public class NewManager : MonoBehaviour
         else if (InputManager.inputType == InputType.moveY)
         {
             activePentomino.AttemptMove(Vector2Int.down);
+        }
+        else if (InputManager.inputType == InputType.rotate)
+        {
+            activePentomino.AttemptRotation(true);
         }
     }
 }
