@@ -17,7 +17,14 @@ public class SquareBehaviour : MonoBehaviour
 
     public void UpdateGridPosition()
     {
-        gridPosition = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
+        int newY = Mathf.RoundToInt(transform.position.y);
+        int newX = Mathf.RoundToInt(transform.position.x);
+        if (newY < 0)
+            newY = 0;
+        if (newX < 0)
+            newX = 0;
+
+        gridPosition = new Vector2Int(newX, newY);
 
     }
 
@@ -97,8 +104,17 @@ public class SquareBehaviour : MonoBehaviour
     public void FallAfterLineCleared()
     {
         SetCellFilledStatus(false);
-        transform.position += Vector3.down;
+        if (transform.position.y > 0)
+        {
+            transform.position += Vector3.down;
+        }
         UpdateGridPosition();
         SetCellFilledStatus(true);
+    }
+
+    public void Clear()
+    {
+        SetCellFilledStatus(false);
+        Destroy(this.gameObject);
     }
 }

@@ -16,6 +16,9 @@ public class NewManager : MonoBehaviour
     public static bool spawnInProgress = false;
     public static bool spawnRequired = true;
 
+    public int squaresFinishedClearing = 0;
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -144,7 +147,8 @@ public class NewManager : MonoBehaviour
         {
             for (int i2 = 0; i2 < Grid.cells.GetLength(0); i2++)
             {
-                Destroy(Grid.cells[i2, filledRows[i]].square.gameObject);
+                Grid.cells[i2, filledRows[i]].square.Clear();
+                //Destroy(Grid.cells[i2, filledRows[i]].square.gameObject);
             }
         }
 

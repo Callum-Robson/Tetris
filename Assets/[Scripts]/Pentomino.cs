@@ -6,7 +6,7 @@ using UnityEditor;
 public class Pentomino : MonoBehaviour
 {
     private NewManager newManager;
-    public SquareBehaviour[] squares;
+    public List<SquareBehaviour> squares = new List<SquareBehaviour>();
     public BlockData blockData;
     private bool stopped = false;
     private bool rotated = false;
