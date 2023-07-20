@@ -153,23 +153,25 @@ public class NewManager : MonoBehaviour
         }
 
         if (filledRows.Count > 0)
-            DropAfterClear();
+            DropAfterClear(filledRows.Count);
         else
             GameplayStateMachine.NextState();
     }
 
-    private void DropAfterClear()
+    private void DropAfterClear(int linesCleared)
     {
-        for (int i = 0; i < Grid.cells.GetLength(0); i++)
+        //Change this to only apply to cells above highest cleared row
+        for (int i = 0; i < Grid.cells.GetLength(1); i++)
         {
-            for (int i2 = 0; i2 < Grid.cells.GetLength(1); i2++)
+            for (int i2 = 0; i2 < Grid.cells.GetLength(0); i2++)
             {
-                if (Grid.cells[i,i2].GetFilledState())
+                if (Grid.cells[i2,i].GetFilledState())
                 {
-                    Grid.cells[i, i2].square.FallAfterLineCleared();
+                    Grid.cells[i2, i].square.FallAfterLineCleared(linesCleared);
                 }
             }
         }
+        //Now set the filledStatus for each cell
 
         GameplayStateMachine.NextState();
     }

@@ -909,6 +909,7 @@ MonoBehaviour:
     y: 0
     width: 24
     height: 40
+  squaresFinishedClearing: 0
 --- !u!1 &1143704869
 GameObject:
   m_ObjectHideFlags: 0
@@ -958,6 +959,7 @@ MonoBehaviour:
     y: 0
     width: 24
     height: 40
+  squaresFinishedClearing: 0
 --- !u!4 &1143704871
 Transform:
   m_ObjectHideFlags: 0
@@ -1594,6 +1596,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1491299bd68b13c41b812240870e65e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedFactor: 2
   fallTriggered: 0
 --- !u!4 &2132248390
 Transform:

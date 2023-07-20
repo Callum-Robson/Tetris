@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GameTimer : MonoBehaviour
 {
+    public float speedFactor = 1;
     private static float fallTimer;
     private static float tickTimer;
     private NewManager pManager;
@@ -23,7 +24,7 @@ public class GameTimer : MonoBehaviour
             tickTimer += Time.deltaTime;
             fallTimer += Time.deltaTime;
 
-            if (fallTimer >= 0.5f && !stateChanged)
+            if (fallTimer >= 0.5f / speedFactor && !stateChanged)
             {
                 fallTimer = 0;
                 stateChanged = true;
@@ -34,7 +35,7 @@ public class GameTimer : MonoBehaviour
                 GameplayStateMachine.NextState();
                 //GameplayStateMachine.SetState(GameplayStateMachine.States.CollisionCheck);
             }
-            else if (tickTimer >= 0.1f && !stateChanged)
+            else if (tickTimer >= 0.1f / speedFactor && !stateChanged)
             {
                 tickTimer = 0;
                 if (InputManager.inputX != 0 || InputManager.inputY != 0 || InputManager.rotationTriggered)
@@ -62,7 +63,7 @@ public class GameTimer : MonoBehaviour
             fallTimer += Time.deltaTime;
 
 
-            if (fallTimer >= 0.5f && !stateChanged)
+            if (fallTimer >= 0.5f / speedFactor && !stateChanged)
             {
                 fallTimer = 0;
                 stateChanged = true;
@@ -73,7 +74,7 @@ public class GameTimer : MonoBehaviour
                 GameplayStateMachine.NextState();
                 //GameplayStateMachine.SetState(GameplayStateMachine.States.CollisionCheck);
             }
-            if (tickTimer >= 0.1f && !stateChanged)
+            if (tickTimer >= 0.1f / speedFactor && !stateChanged)
             {
                 tickTimer = 0;
                 if (InputManager.inputX != 0 || InputManager.inputY != 0 || InputManager.rotationTriggered)

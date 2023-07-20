@@ -82,6 +82,18 @@ public class SquareBehaviour : MonoBehaviour
 
     public void SetCellFilledStatus(bool value)
     {
+        int newY = Mathf.RoundToInt(transform.position.y);
+        int newX = Mathf.RoundToInt(transform.position.x);
+        if (newY < 0)
+            newY = 0;
+        if (newX < 0)
+            newX = 0;
+
+        gridPosition = new Vector2Int(newX, newY);
+        if (gridPosition.x == 20 && value)
+        {
+            Debug.Log("Square # 20 = " + value);
+        }
         if (gridPosition.x < Grid.cells.GetLength(0) && gridPosition.y < Grid.cells.GetLength(1))
             Grid.cells[gridPosition.x, gridPosition.y].SetFilledState(value);
         else
@@ -101,19 +113,24 @@ public class SquareBehaviour : MonoBehaviour
         mpbManager.DeactivateHighlight();
     }
 
-    public void FallAfterLineCleared()
+    public void FallAfterLineCleared(int linesCleared)
     {
         SetCellFilledStatus(false);
         if (transform.position.y > 0)
         {
-            transform.position += Vector3.down;
+            transform.position += (Vector3.down * linesCleared); //Change this to move down by either amount of lines cleared, or more likely, until colliding with border or another square
         }
         UpdateGridPosition();
+        AssignToCell();
         SetCellFilledStatus(true);
     }
 
     public void Clear()
     {
+        if (gridPosition.x == 20 && gridPosition.y == 0)
+        {
+            Debug.Log("Clearing square 20,0");
+        }
         SetCellFilledStatus(false);
         Destroy(this.gameObject);
     }
