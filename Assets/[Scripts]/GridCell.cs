@@ -28,10 +28,10 @@ public class GridCell
     public void SetColor(Color newColor)
     {
         debugCell.spriteRenderer.color = newColor;
-        if (newColor.r == 1)
-            Debug.Log("cell at position " + position + "  set color to red");
-        else
-            Debug.Log("cell at position " + position + "  set color to green");
+        //if (newColor.r == 1)
+            //Debug.Log("cell at position " + position + "  set color to red");
+        //else
+            //Debug.Log("cell at position " + position + "  set color to green");
     }
 
     public void SetFilledState(bool value)
@@ -41,7 +41,7 @@ public class GridCell
             SetColor(Color.red);
         else
             SetColor(Color.green);
-        Debug.Log("cell at position " + position + "  set isFilled to " + value);
+        //Debug.Log("cell at position " + position + "  set isFilled to " + value);
     }
 
     public bool GetFilledState()

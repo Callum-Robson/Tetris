@@ -28,11 +28,16 @@ public class SquareBehaviour : MonoBehaviour
 
     }
 
+
     public bool CheckCollision(Vector2Int direction)
     {
         gridPosition = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
         if (gridPosition.y < 1)
             return true;
+
+        if (gridPosition.x < 0 || gridPosition.x > Grid.cells.GetLength(0))
+            return true;
+
         if (direction.x != 0)
         {
             if (gridPosition.x + direction.x > 23)
@@ -60,6 +65,7 @@ public class SquareBehaviour : MonoBehaviour
         else
             return false;
     }
+
 
     public bool CheckFallCollision(Vector2Int direction)
     {
