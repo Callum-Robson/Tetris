@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="BlockData">
+    <Position X="4.5" Y="5.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQgQAAACIAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\[Scripts]\BlockData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DebugGridCell">
+    <Position X="16.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\[Scripts]\DebugGridCell.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameplayStateMachine">
+    <Position X="0.75" Y="0.5" Width="2" />
+    <NestedTypes>
+      <Enum Name="GameplayStateMachine.States" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\[Scripts]\GameplayStateMachine.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAQABAAAAKAAAAiAIAEAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\[Scripts]\GameplayStateMachine.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameTimer">
+    <Position X="3.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACEAAAAAAAgAACgAAAAAAAAAAQAAAAAEAAE=</HashCode>
+      <FileName>Assets\[Scripts]\GameTimer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Grid">
+    <Position X="12.75" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AEQAAAABQCAAAAIAAIAAACACAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>Assets\[Scripts]\Grid.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GridCell">
+    <Position X="14.75" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABAAAABAAAAACAIAAAEAABAAAAAAgCAAAAIAA=</HashCode>
+      <FileName>Assets\[Scripts]\GridCell.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="InputManager">
+    <Position X="5.25" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAACAAAAAAAAAIAAAAAABAAAQAAAAAAAAA=</HashCode>
+      <FileName>Assets\[Scripts]\InputManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NewManager">
+    <Position X="9.25" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAEEACCQIUAACgAAAgEAAAAAAACAAAACAAAAAAQ=</HashCode>
+      <FileName>Assets\[Scripts]\NewManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Pentomino">
+    <Position X="0.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAACAAAAADgAEAAAAAAAAEAAAAIAAIAAAAAAA=</HashCode>
+      <FileName>Assets\[Scripts]\Pentomino.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SquareBehaviour">
+    <Position X="2.5" Y="5.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAIAEAAAAIAAAAACAAABAAAJIAIA=</HashCode>
+      <FileName>Assets\[Scripts]\SquareBehaviour.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="InputType">
+    <Position X="7.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAAAAABAQAAAAAAAIAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>Assets\[Scripts]\InputManager.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

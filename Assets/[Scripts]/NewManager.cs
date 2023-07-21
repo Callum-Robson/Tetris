@@ -100,6 +100,10 @@ public class NewManager : MonoBehaviour
 
     public void CheckForFilledRow()
     {
+        // this may have somehow broke state switching backto spawn
+        //squaresFinishedFalling = 0;
+       // squaresFinishedFalling = 0;
+        //////////////////////////////////////
         Debug.Log("Checking for filled row");
         bool lineFilled = false;
         bool valuesSet = false;
@@ -124,8 +128,12 @@ public class NewManager : MonoBehaviour
                     highestSquare = activePentomino.squares[i].gridPosition.y;
             }
         }
-        if (highestSquare < 1)
-            highestSquare = 1;
+
+        highestSquare++;
+        if (highestSquare >= Grid.cells.GetLength(1))
+        {
+            highestSquare = Grid.cells.GetLength(1) - 1;
+        }
 
         for (int i = lowestSquare; i < highestSquare; i++)
         {
@@ -199,7 +207,14 @@ public class NewManager : MonoBehaviour
         }
 
 
-        //Now set the filledStatus for each cell
+
+        for (int i2 = 0; i2 < Grid.cells.GetLength(0); i2++)
+        {
+            if (!Grid.cells[i2, 0].GetFilledState())
+            {
+                Debug.Log("Grid cell with y-0 not empty after line clear");
+            }
+        }
 
         GameplayStateMachine.NextState();
     }

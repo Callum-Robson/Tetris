@@ -35,7 +35,7 @@ public class Pentomino : MonoBehaviour
 
     // Checks if the destination space for each square is empty, if any one is found to be filled, stop checking and set stopped to true;
     // If no filled cells are found, move the pentomino.
-    public void AttemptMove(Vector2Int direction)
+    public bool AttemptMove(Vector2Int direction)
     {
         bool collided = false;
 
@@ -62,6 +62,7 @@ public class Pentomino : MonoBehaviour
                         }
                         Stop();
                         NewManager.spawnRequired = true;
+                        return false;
                     }
                     break;
                 }
@@ -70,12 +71,16 @@ public class Pentomino : MonoBehaviour
             {
                 transform.position += new Vector3(direction.x, direction.y);
             }
-
+            // ADD CHECK FOR STOPPED?
             foreach (SquareBehaviour square in squares)
             {
                 square.UpdateGridPosition();
                 square.SetCellFilledStatus(true);
             }
+            if (!stopped)
+                GameplayStateMachine.NextState();
+            return true;
+
         }
         else
         {
@@ -92,7 +97,7 @@ public class Pentomino : MonoBehaviour
                     }
                     Stop();
                     NewManager.spawnRequired = true;
-                    break;
+                    return false;
                 }
             }
             if (collided == false)
@@ -100,15 +105,17 @@ public class Pentomino : MonoBehaviour
                 transform.position += new Vector3(0, -1);
             }
 
+            // ADD CHECK FOR STOPPED?
             foreach (SquareBehaviour square in squares)
             {
                 square.UpdateGridPosition();
                 square.SetCellFilledStatus(true);
             }
+            if (!stopped)
+                GameplayStateMachine.NextState();
+            return true;
         }
 
-        if (!stopped)
-            GameplayStateMachine.NextState();
     }
 
     public void AttemptRotation(bool clockwise)
