@@ -15,8 +15,10 @@ public class NewManager : MonoBehaviour
     public Rect bounds;
     public static bool spawnInProgress = false;
     public static bool spawnRequired = true;
+    public static bool waitingOnLineClear = false;
 
-    public int squaresFinishedClearing = 0;
+    public static int squaresInNeedOfFalling = 0;
+    public static int squaresFinishedFalling = 0;
 
 
 
@@ -98,6 +100,7 @@ public class NewManager : MonoBehaviour
 
     public void CheckForFilledRow()
     {
+        Debug.Log("Checking for filled row");
         bool lineFilled = false;
         bool valuesSet = false;
         int highestSquare = 0;
@@ -121,6 +124,8 @@ public class NewManager : MonoBehaviour
                     highestSquare = activePentomino.squares[i].gridPosition.y;
             }
         }
+        if (highestSquare < 1)
+            highestSquare = 1;
 
         for (int i = lowestSquare; i < highestSquare; i++)
         {
@@ -143,7 +148,10 @@ public class NewManager : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < filledRows.Count; i++)
+        int filledRowsCount = filledRows.Count;
+
+
+        for (int i = 0; i < filledRowsCount; i++)
         {
             for (int i2 = 0; i2 < Grid.cells.GetLength(0); i2++)
             {
@@ -153,9 +161,16 @@ public class NewManager : MonoBehaviour
         }
 
         if (filledRows.Count > 0)
+        {
+            waitingOnLineClear = true;
             DropAfterClear(filledRows.Count);
+        }
         else
+        {
+            waitingOnLineClear = false;
             GameplayStateMachine.NextState();
+        }
+
     }
 
     private void DropAfterClear(int linesCleared)
@@ -167,10 +182,23 @@ public class NewManager : MonoBehaviour
             {
                 if (Grid.cells[i2,i].GetFilledState())
                 {
+                    squaresInNeedOfFalling++;
+                }
+            }
+        }
+
+        for (int i = 0; i < Grid.cells.GetLength(1); i++)
+        {
+            for (int i2 = 0; i2 < Grid.cells.GetLength(0); i2++)
+            {
+                if (Grid.cells[i2, i].GetFilledState())
+                {
                     Grid.cells[i2, i].square.FallAfterLineCleared(linesCleared);
                 }
             }
         }
+
+
         //Now set the filledStatus for each cell
 
         GameplayStateMachine.NextState();

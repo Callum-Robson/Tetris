@@ -95,6 +95,9 @@ public class SquareBehaviour : MonoBehaviour
         if (newX < 0)
             newX = 0;
 
+        if (newX > 19)
+            Debug.Log("X over 19");
+
         gridPosition = new Vector2Int(newX, newY);
         if (gridPosition.x == 20 && value)
         {
@@ -129,6 +132,13 @@ public class SquareBehaviour : MonoBehaviour
         UpdateGridPosition();
         AssignToCell();
         SetCellFilledStatus(true);
+
+        NewManager.squaresFinishedFalling++;
+        Debug.Log("Squares Finished Clearing = " + NewManager.squaresFinishedFalling);
+        if (NewManager.squaresFinishedFalling == NewManager.squaresInNeedOfFalling)
+        {
+            NewManager.waitingOnLineClear = false;
+        }
     }
 
     public void Clear()
