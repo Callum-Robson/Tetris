@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
+    public static bool debugMode = false;
     public bool usingBlockManager = false;
     public NewManager pManager;
     public BlockManager blockManager;
@@ -46,19 +47,13 @@ public class Grid : MonoBehaviour
             {
                 // cells[i, i2].position = new Vector2(bounds.min.x + 0.5f + (1.0f * i), bounds.min.y + 0.5f + (1.0f * i2)); //new GridCell(bounds.min.x + 0.5f + (1.0f * i), bounds.min.y + 0.5f + (1.0f * i2));
                 cells[i, i2] = new GridCell(bounds.min.x + 0.5f + (1.0f * i), bounds.min.y + 0.5f + (1.0f * i2));
-                cells[i, i2].debugCell = Instantiate(debugCell, transform);
-                cells[i, i2].InitializeDebugCell();
-
+                if (debugMode)
+                {
+                    cells[i, i2].debugCell = Instantiate(debugCell, transform);
+                    cells[i, i2].InitializeDebugCell();
+                }
             }
         }
         Debug.Log("Cells generated");
-    }
-
-
-
-    // Update is called once per frame
-    void Update()
-    {
-       
     }
 }
