@@ -203,6 +203,12 @@ public class NewManager : MonoBehaviour
             }
         }
 
+        if (squaresFinishedFalling == 0)
+        {
+            waitingOnLineClear = false;
+
+        }
+
         for (int i = highestLine + 1; i < Grid.cells.GetLength(1); i++)
         {
             for (int i2 = 0; i2 < Grid.cells.GetLength(0); i2++)
