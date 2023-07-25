@@ -9,7 +9,8 @@ public class GameplayStateMachine : MonoBehaviour
         Start,
         Spawn,
         Timer,
-        Wait
+        Wait,
+        WaitForLineClear
     }
 
 
@@ -39,6 +40,8 @@ public class GameplayStateMachine : MonoBehaviour
                 break;
             case States.Wait:
                 currentState = States.Timer;
+                break;
+            case States.WaitForLineClear:
                 break;
         }
     }

@@ -37,6 +37,10 @@ public class Pentomino : MonoBehaviour
     // If no filled cells are found, move the pentomino.
     public bool AttemptMove(Vector2Int direction)
     {
+        if (GameplayStateMachine.CurrentState == GameplayStateMachine.States.WaitForLineClear)
+        {
+            return false;
+        }
         bool collided = false;
 
         //Temporarily set all of the grid cells occupied by this pentomino to empty
@@ -118,8 +122,12 @@ public class Pentomino : MonoBehaviour
 
     }
 
-    public void AttemptRotation(bool clockwise)
+    public bool AttemptRotation(bool clockwise)
     {
+        if (GameplayStateMachine.CurrentState == GameplayStateMachine.States.WaitForLineClear)
+        {
+            return false;
+        }
         foreach (SquareBehaviour square in squares)
         {
             square.SetCellFilledStatus(false);
@@ -144,7 +152,7 @@ public class Pentomino : MonoBehaviour
             {
                 rotated = false;
                 transform.Rotate(0, 0, -rotationAmount);
-                break;
+                //return false;
             }
         }
 
@@ -155,10 +163,12 @@ public class Pentomino : MonoBehaviour
         }
         if (!stopped)
             GameplayStateMachine.NextState();
+        return true;
     }
 
     private void Stop()
     {
+
         foreach (SquareBehaviour square in squares)
         {
             square.UpdateGridPosition();

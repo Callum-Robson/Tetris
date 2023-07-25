@@ -104,6 +104,8 @@ public class NewManager : MonoBehaviour
         //squaresFinishedFalling = 0;
        // squaresFinishedFalling = 0;
         //////////////////////////////////////
+        ///
+
         Debug.Log("Checking for filled row");
         bool lineFilled = false;
         bool valuesSet = false;
@@ -111,6 +113,7 @@ public class NewManager : MonoBehaviour
         int lowestSquare = 0;
         List<int> filledRows = new List<int>();
 
+        //1. Get highest and lowest cells occupied by active pentomino
         for(int i = 0; i < 5; i++)
         {
             if (!valuesSet)
@@ -129,12 +132,14 @@ public class NewManager : MonoBehaviour
             }
         }
 
+        //2. Increment highestSquare for use in for loop
         highestSquare++;
         if (highestSquare >= Grid.cells.GetLength(1))
         {
             highestSquare = Grid.cells.GetLength(1) - 1;
         }
 
+        //3. Iterate through grid cell rows occupied by active pentomino and check for any that aren't filled, if none found, add row index to filledRows
         for (int i = lowestSquare; i < highestSquare; i++)
         {
             int filledCells = 0;
@@ -159,6 +164,7 @@ public class NewManager : MonoBehaviour
         int filledRowsCount = filledRows.Count;
 
 
+        //4. For every cell in a filled row, call square's Clear function
         for (int i = 0; i < filledRowsCount; i++)
         {
             for (int i2 = 0; i2 < Grid.cells.GetLength(0); i2++)
@@ -168,11 +174,13 @@ public class NewManager : MonoBehaviour
             }
         }
 
+        //5. If any rows were filled, call DropAfterClear to drop higher squares to the bottom... MAYBE THIS IS WHERE THE PROBLEM IS... Since not every block that drops is higher by exactly the number of rows cleared
         if (filledRows.Count > 0)
         {
             waitingOnLineClear = true;
-            DropAfterClear(filledRows.Count);
+            DropAfterClear(filledRows.Count, filledRows[filledRows.Count-1]);
         }
+        //5. Otherwise no rows were full, just move back to timer
         else
         {
             waitingOnLineClear = false;
@@ -181,10 +189,10 @@ public class NewManager : MonoBehaviour
 
     }
 
-    private void DropAfterClear(int linesCleared)
+    private void DropAfterClear(int linesCleared, int highestLine)
     {
         //Change this to only apply to cells above highest cleared row
-        for (int i = 0; i < Grid.cells.GetLength(1); i++)
+        for (int i = highestLine + 1; i < Grid.cells.GetLength(1); i++)
         {
             for (int i2 = 0; i2 < Grid.cells.GetLength(0); i2++)
             {
@@ -195,7 +203,7 @@ public class NewManager : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < Grid.cells.GetLength(1); i++)
+        for (int i = highestLine + 1; i < Grid.cells.GetLength(1); i++)
         {
             for (int i2 = 0; i2 < Grid.cells.GetLength(0); i2++)
             {

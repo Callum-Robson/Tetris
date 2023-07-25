@@ -117,7 +117,7 @@ public class GameTimer : MonoBehaviour
             //    //GameplayStateMachine.SetState(GameplayStateMachine.States.CollisionCheck);
             //}
         }
-        else if (NewManager.spawnRequired && !NewManager.waitingOnLineClear)
+        else if (NewManager.spawnRequired && !NewManager.waitingOnLineClear && GameplayStateMachine.CurrentState != GameplayStateMachine.States.WaitForLineClear)
         {
             GameplayStateMachine.SetState(GameplayStateMachine.States.Spawn);
         }
