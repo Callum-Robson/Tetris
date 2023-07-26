@@ -9,9 +9,11 @@ public class GameTimer : MonoBehaviour
     private static float tickTimer;
     private NewManager pManager;
     public bool fallTriggered = false;
+    private PlayerController playerController;
 
     private void Start()
     {
+        playerController = FindObjectOfType<PlayerController>();
         pManager = FindObjectOfType<NewManager>();
     }
 
@@ -76,6 +78,7 @@ public class GameTimer : MonoBehaviour
             }
             if (tickTimer >= 0.1f / speedFactor && !stateChanged)
             {
+                playerController.Move();
                 tickTimer = 0;
                 if (InputManager.inputX != 0 || InputManager.inputY != 0 || InputManager.rotationTriggered)
                 {

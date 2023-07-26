@@ -187,4 +187,12 @@ public class Pentomino : MonoBehaviour
     }
     //TODO: Create a function to check each row occupied by a stopped pentomino, to see if all cells are filled, then clear the row.
 
+    public bool Flip()
+    {
+
+        return true;
+    }
+
+
+
 }
