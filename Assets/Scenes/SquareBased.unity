@@ -1023,6 +1023,10 @@ MonoBehaviour:
     y: 0
     width: 24
     height: 40
+  bigSpawnBlockCount: 20
+  spawnedBlockStopped: 0
+  bigSpawnInstanced: 0
+  BigSpawnNeeded: 1
 --- !u!1 &1143704869
 GameObject:
   m_ObjectHideFlags: 0
@@ -1072,6 +1076,10 @@ MonoBehaviour:
     y: 0
     width: 24
     height: 40
+  bigSpawnBlockCount: 20
+  spawnedBlockStopped: 0
+  bigSpawnInstanced: 0
+  BigSpawnNeeded: 1
 --- !u!4 &1143704871
 Transform:
   m_ObjectHideFlags: 0

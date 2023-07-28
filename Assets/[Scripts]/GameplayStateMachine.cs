@@ -65,7 +65,10 @@ public class GameplayStateMachine : MonoBehaviour
         if (currentState == States.Spawn && !stateMethodCalled)
         {
             stateMethodCalled = true;
-            pManager.SpawnBlock();
+            if (!pManager.BigSpawnNeeded)
+                pManager.SpawnBlock();
+            else
+                pManager.StartBigSpawn();
         }
         if (currentState == States.Timer)
         {
