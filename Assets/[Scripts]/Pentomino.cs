@@ -5,9 +5,9 @@ using UnityEditor;
 
 public class Pentomino : MonoBehaviour
 {
-    private NewManager newManager;
+    private PentominoManager newManager;
     public List<SquareBehaviour> squares = new List<SquareBehaviour>();
-    public BlockData blockData;
+    public SquareData blockData;
     private bool stopped = false;
     private bool rotated = false;
 
@@ -30,7 +30,7 @@ public class Pentomino : MonoBehaviour
         //squares = GetComponentsInChildren<SquareBehaviour>();
         #endregion
 
-        newManager = FindObjectOfType<NewManager>();
+        newManager = FindObjectOfType<PentominoManager>();
     }
 
     // Checks if the destination space for each square is empty, if any one is found to be filled, stop checking and set stopped to true;
@@ -65,7 +65,7 @@ public class Pentomino : MonoBehaviour
                             Debug.Log("Rotated Pentomino Stopped");
                         }
                         Stop();
-                        NewManager.spawnRequired = true;
+                        PentominoManager.spawnRequired = true;
                         return false;
                     }
                     break;
@@ -100,7 +100,7 @@ public class Pentomino : MonoBehaviour
                         Debug.Log("Rotated Pentomino Stopped");
                     }
                     Stop();
-                    NewManager.spawnRequired = true;
+                    PentominoManager.spawnRequired = true;
                     return false;
                 }
             }

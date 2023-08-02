@@ -133,11 +133,11 @@ public class SquareBehaviour : MonoBehaviour
         AssignToCell();
         SetCellFilledStatus(true);
 
-        NewManager.squaresFinishedFalling++;
-        Debug.Log("Squares Finished Clearing = " + NewManager.squaresFinishedFalling);
-        if (NewManager.squaresFinishedFalling == NewManager.squaresInNeedOfFalling)
+        PentominoManager.squaresFinishedFalling++;
+        Debug.Log("Squares Finished Clearing = " + PentominoManager.squaresFinishedFalling);
+        if (PentominoManager.squaresFinishedFalling == PentominoManager.squaresInNeedOfFalling)
         {
-            NewManager.waitingOnLineClear = false;
+            PentominoManager.waitingOnLineClear = false;
         }
     }
 

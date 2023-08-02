@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField]
+    private SpriteRenderer spriteRenderer;
     private int x = 0;
     private int jump = 0;
 
@@ -12,13 +14,20 @@ public class PlayerController : MonoBehaviour
     private bool grounded = true;
     private bool moveInProgress = false;
     private bool isSpawned = false;
+    private int jumpCount = 0;
+    private bool jumped = false;
 
-    private NewManager pManager;
+    private bool jumpTriggered = false;
+    private bool jumpExecuted = false;
+    private bool doubleJumpTriggered = false;
+    private bool doubleJumpExecuted = false;
+
+    private PentominoManager pManager;
 
     // Start is called before the first frame update
     void Start()
     {
-        pManager = FindObjectOfType<NewManager>();   
+        pManager = FindObjectOfType<PentominoManager>();   
     }
 
     public void UpdateGridPosition()
@@ -88,6 +97,12 @@ public class PlayerController : MonoBehaviour
     {
         if (isSpawned)
         {
+            if (Input.GetKeyDown(KeyCode.Space) && jumpExecuted)
+                doubleJumpTriggered = true;
+
+            if (Input.GetKeyDown(KeyCode.Space) && !jumpTriggered)
+                jumpTriggered = true;
+
             if (!moveInProgress)
             {
                 x = 0;
@@ -96,10 +111,12 @@ public class PlayerController : MonoBehaviour
                 if (Input.GetKey(KeyCode.J))
                 {
                     x = -1;
+                    spriteRenderer.flipX = false;
                 }
                 else if (Input.GetKey(KeyCode.L))
                 {
                     x = 1;
+                    spriteRenderer.flipX = true;
                 }
                 if (Input.GetKey(KeyCode.Space) && transform.position.y < 23)
                 {
@@ -115,11 +132,21 @@ public class PlayerController : MonoBehaviour
         {
             moveInProgress = true;
 
+            Vector2Int moveDirection = Vector2Int.zero;
+
+            moveDirection.x = x;
+
+            if(jumpTriggered)
+            {
+                moveDirection.y = 1;
+            }
+
+            // If player not on lowest tile, check if the tile below is filled, if not, fall.
             if (transform.position.y > 0)
             {
                 if (!CheckCollision(Vector2Int.down))
                 {
-                    transform.position += new Vector3(0, -1);
+                    transform.position += new Vector3(0, -0.5f);
                     grounded = false;
                 }
                 else
@@ -128,25 +155,41 @@ public class PlayerController : MonoBehaviour
                     grounded = true;
                 }
             }
+            // Player on lowest tile
             else
             {
                 grounded = true;
             }
 
-            if (!grounded)
-            {
-                jump = 0;
-            }
 
-            if (jump != 0 || x != 0)
+            if (moveDirection.x != 0 || moveDirection.y != 0)
             {
-                if (!CheckCollision(new Vector2Int(x, jump)))
+                if (!CheckCollision(moveDirection))
                 {
-                    transform.position += new Vector3(x, jump, 0);
+                    transform.position += new Vector3(moveDirection.x, moveDirection.y, 0);
                 }
             }
 
+            jumpExecuted = true;
+
+            if (doubleJumpTriggered && transform.position.y < 23)
+            {
+                doubleJumpExecuted = true;
+                doubleJumpTriggered = false;
+                Invoke(nameof(DoubleJump), 0.1f);
+            }
+
+            jumpTriggered = false;
+
             moveInProgress = false;
+        }
+    }
+
+    public void DoubleJump()
+    {
+        if (!CheckCollision(Vector2Int.up))
+        {
+            transform.position += new Vector3(0, 1, 0);
         }
     }
 

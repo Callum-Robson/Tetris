@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewManager : MonoBehaviour
+public class PentominoManager : MonoBehaviour
 {
     [SerializeField]
     private Pentomino[] pentominoPrefabs = new Pentomino[12];

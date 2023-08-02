@@ -6,8 +6,7 @@ public class Grid : MonoBehaviour
 {
     public static bool debugMode = false;
     public bool usingBlockManager = false;
-    public NewManager pManager;
-    public BlockManager blockManager;
+    public PentominoManager pManager;
     public DebugGridCell debugCell;
     public static GridCell[,] cells;
     [SerializeField]
@@ -24,21 +23,8 @@ public class Grid : MonoBehaviour
         bounds.height = rowCount;
         bounds.center = new Vector2(11.5f, 19.5f);
 
-        if (usingBlockManager)
-        {
-            blockManager = FindObjectOfType<BlockManager>();
-            blockManager.bounds.center = bounds.center;
-        }
-
-        else
-        {
-            pManager = FindObjectOfType<NewManager>();
-            pManager.bounds.center = bounds.center;
-        }
-
-
-
-
+        pManager = FindObjectOfType<PentominoManager>();
+        pManager.bounds.center = bounds.center;
 
         cells = new GridCell[columnCount, rowCount];
         for (int i = 0; i < columnCount; i++)

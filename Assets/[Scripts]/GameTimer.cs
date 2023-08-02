@@ -7,14 +7,14 @@ public class GameTimer : MonoBehaviour
     public float speedFactor = 1;
     private static float fallTimer;
     private static float tickTimer;
-    private NewManager pManager;
+    private PentominoManager pManager;
     public bool fallTriggered = false;
     private PlayerController playerController;
 
     private void Start()
     {
         playerController = FindObjectOfType<PlayerController>();
-        pManager = FindObjectOfType<NewManager>();
+        pManager = FindObjectOfType<PentominoManager>();
     }
 
     public IEnumerator Timer()
@@ -57,7 +57,7 @@ public class GameTimer : MonoBehaviour
 
     public void WaitForTimer()
     {
-        if (GameplayStateMachine.CurrentState == GameplayStateMachine.States.Timer && NewManager.spawnRequired == false)
+        if (GameplayStateMachine.CurrentState == GameplayStateMachine.States.Timer && PentominoManager.spawnRequired == false)
         {
             bool stateChanged = false;
             InputManager.fallTriggered = false;
@@ -120,7 +120,7 @@ public class GameTimer : MonoBehaviour
             //    //GameplayStateMachine.SetState(GameplayStateMachine.States.CollisionCheck);
             //}
         }
-        else if (NewManager.spawnRequired && !NewManager.waitingOnLineClear && GameplayStateMachine.CurrentState != GameplayStateMachine.States.WaitForLineClear && !pManager.BigSpawnNeeded)
+        else if (PentominoManager.spawnRequired && !PentominoManager.waitingOnLineClear && GameplayStateMachine.CurrentState != GameplayStateMachine.States.WaitForLineClear && !pManager.BigSpawnNeeded)
         {
             GameplayStateMachine.SetState(GameplayStateMachine.States.Spawn);
         }

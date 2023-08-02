@@ -14,7 +14,7 @@ public class GameplayStateMachine : MonoBehaviour
     }
 
 
-    private NewManager pManager;
+    private PentominoManager pManager;
     private GameTimer gameTimer;
     private static States currentState = States.Start;
 
@@ -55,7 +55,7 @@ public class GameplayStateMachine : MonoBehaviour
     void Start()
     {
         gameTimer = FindObjectOfType<GameTimer>();
-        pManager = FindObjectOfType<NewManager>();
+        pManager = FindObjectOfType<PentominoManager>();
     }
 
     // Update is called once per frame
